@@ -4,14 +4,14 @@ on:
     tags: '*'
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build-docs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@main
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v2
