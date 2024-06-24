@@ -4,6 +4,8 @@ on:
     tags: '*'
     branches:
       - main
+permissions:
+  contents: write
 
 jobs:
   build-docs:
