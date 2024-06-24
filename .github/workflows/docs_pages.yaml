@@ -4,6 +4,10 @@ on:
     tags: '*'
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+
 permissions:
   contents: write
 
