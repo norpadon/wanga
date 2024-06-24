@@ -1,0 +1,13 @@
+.direnv
+.vscode
+.lsp
+.clj-kondo
+.calva
+.venv
+.mypy_cache
+.pytest_cache
+**/.DS_Store
+**/__pycache__
+
+# Sphinx
+docs/_build

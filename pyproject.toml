@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "wanga"
+version = "0.1.0"
+description = "A library for interacting with Large Language Models."
+authors = ["Artur Chakhvadze <norpadon@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">3.10"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+sphinx = "^7.3.7"
+sphinx-rtd-theme = "^2.0.0"
+sphinxcontrib-napoleon = "^0.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
