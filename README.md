@@ -1,4 +1,4 @@
 # Wanga
-[tests](https://github.com/norpadon/wanga/blob/main/.github/workflows/tests.yaml/badge.svg)
-[docs](https://github.com/norpadon/wanga/blob/main/.github/workflows/docs_pages.yaml/badge.svg)
+[![tests](https://github.com/norpadon/wanga/blob/main/.github/workflows/tests.yaml/badge.svg)](https://github.com/norpadon/wanga/blob/main/.github/workflows/tests.yaml)
+[![docs](https://github.com/norpadon/wanga/blob/main/.github/workflows/docs.yaml/badge.svg)](https://github.com/norpadon/wanga/blob/main/.github/workflows/docs.yaml)
 
