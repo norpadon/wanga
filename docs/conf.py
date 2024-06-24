@@ -5,11 +5,40 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import os
+import sys
+from datetime import datetime
+from dataclasses import dataclass
+from pathlib import Path
 
-project = 'wanga'
-copyright = '2024, Artur Chakhvadze'
-author = 'Artur Chakhvadze'
-release = '0.1.0'
+import toml
+
+
+project_root = Path(__file__).parent.parent
+sys.path.append(str(project_root))
+
+
+@dataclass
+class PoetryConfig:
+    project: str
+    version: str
+    author: str
+
+
+def read_poetry_config(filename: Path | str) -> PoetryConfig:
+    filename = Path(filename)
+    with open(filename, "r") as file:
+        config = toml.load(file)["tool"]["poetry"]
+    return PoetryConfig(project=config['name'],
+                        version=config['version'],
+                        author=config['authors'][0])
+
+poetry_config = read_poetry_config(project_root / "pyproject.toml")
+project = poetry_config.project
+author = poetry_config.author
+copyright = f"{datetime.now().year}, {author}"
+version = poetry_config.version
+
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
