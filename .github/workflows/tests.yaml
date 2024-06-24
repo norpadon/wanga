@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build-docs:
+  run-tests:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -20,8 +20,8 @@ jobs:
       with:
         python-version: "3.10"
     - uses: abatilo/actions-poetry@v3
-    - name: install
+    - name: Install dependencies
       run: poetry install --with dev
-    - name: Build documentation
+    - name: Run tests
       run: poetry run pytest
 

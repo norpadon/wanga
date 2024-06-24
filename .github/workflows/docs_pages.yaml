@@ -23,7 +23,7 @@ jobs:
       with:
         python-version: "3.10"
     - uses: abatilo/actions-poetry@v3
-    - name: install
+    - name: Install dependencies
       run: poetry install --with docs
     - name: Build documentation
       run: |
