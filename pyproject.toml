@@ -11,6 +11,8 @@ python = ">3.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
+
+[tool.poetry.group.docs.dependencies]
 sphinx = "^7.3.7"
 sphinx-rtd-theme = "^2.0.0"
 sphinxcontrib-napoleon = "^0.7"
