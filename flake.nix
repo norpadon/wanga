@@ -20,7 +20,6 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               poetry
-              poetry-dynamic-versioning
               python
             ];
             shellHook = ''
