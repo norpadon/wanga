@@ -1,5 +1,6 @@
 import collections
 import collections.abc
+import typing
 from types import NoneType, UnionType
 from typing import Annotated, Union, get_args, get_origin
 
@@ -23,11 +24,11 @@ def unpack_optional(annotation) -> type[UnionType] | None:
 
     Examples:
     >>> unpack_optional(typing.Optional[int])
-    int
+    <class 'int'>
     >>> unpack_optional(int | float | None)
     int | float
-    >>> unpack_optional(int)
-    None
+    >>> unpack_optional(int) is None
+    True
     """
     origin = get_origin(annotation)
     args = get_args(annotation)
@@ -137,7 +138,7 @@ def normalize_annotation(annotation, concretize: bool = False):
     >>> normalize_annotation(typing.List[int])
     list[int]
     >>> normalize_annotation(typing.Annotated[str, 'tag'])
-    str
+    <class 'str'>
     >>> normalize_annotation(typing.Union[int, str])
     int | str
     >>> normalize_annotation(collections.abc.Sequence[int])

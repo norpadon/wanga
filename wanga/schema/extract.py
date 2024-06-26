@@ -55,7 +55,7 @@ def extract_hints(callable: Callable) -> DocstringHints:
 
 
 def annotation_to_schema(annotation) -> SchemaNode:
-    r"""Extract a schema from the type annotation."""
+    r"""Extract schema from the type annotation."""
     if annotation in [Any, None]:
         return UndefinedNode(original_annotation=annotation)
 
@@ -109,7 +109,7 @@ def annotation_to_schema(annotation) -> SchemaNode:
 
 
 def extract_schema(callable: Callable) -> CallableSchema:
-    r"""Extract a schema from a callable."""
+    r"""Extract schema from a callable."""
     signature = inspect.signature(callable, eval_str=True)
     return_type = signature.return_annotation
 
