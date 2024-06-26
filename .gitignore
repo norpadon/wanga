@@ -11,3 +11,6 @@
 
 # Sphinx
 docs/_build
+
+# Secrets
+.env
