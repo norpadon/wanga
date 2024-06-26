@@ -4,9 +4,16 @@ import typing
 
 from attrs import frozen
 
-from wanga.schema.extract import *
-from wanga.schema.normalize import *
-from wanga.schema.schema import *
+from wanga.schema.extract import extract_schema
+from wanga.schema.normalize import normalize_annotation, unpack_optional
+from wanga.schema.schema import (
+    CallableSchema,
+    ObjectField,
+    ObjectNode,
+    PrimitiveNode,
+    SequenceNode,
+    UndefinedNode,
+)
 
 
 def test_normalize_schema():
@@ -45,7 +52,7 @@ def test_concretize_schema():
 
 
 def test_extract_schema():
-    def foo(x: int, y: str = "hello"):
+    def foo(x: int, y: str = "hello"):  # noqa
         pass
 
     foo_schema = CallableSchema(
@@ -72,7 +79,7 @@ def test_extract_schema():
 
     assert extract_schema(foo) == foo_schema
 
-    def bar(x: typing.List[int]) -> int:
+    def bar(x: typing.List[int]) -> int:  # noqa
         r"""Bar.
 
         Blah blah blah.

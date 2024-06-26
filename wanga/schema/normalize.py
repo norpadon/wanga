@@ -1,6 +1,6 @@
 import collections
 import collections.abc
-import typing
+import typing  # noqa: F401
 from types import NoneType, UnionType
 from typing import Annotated, Union, get_args, get_origin
 
