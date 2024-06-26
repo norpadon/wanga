@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>wanga.schema.schema &mdash; wanga  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            wanga
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">wanga</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">wanga.schema.schema</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for wanga.schema.schema</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">NoneType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">attrs</span> <span class="kn">import</span> <span class="n">frozen</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;CallableSchema&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MappingNode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ObjectField&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ObjectNode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PrimitiveNode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SchemaNode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SequenceNode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TupleNode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UndefinedNode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UnionNode&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="SchemaNode">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.SchemaNode">[docs]</a>
+<span class="nd">@frozen</span>
+<span class="k">class</span> <span class="nc">SchemaNode</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for schema nodes.&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="UndefinedNode">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.UndefinedNode">[docs]</a>
+<span class="nd">@frozen</span>
+<span class="k">class</span> <span class="nc">UndefinedNode</span><span class="p">(</span><span class="n">SchemaNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Node corresponding to missing, `Any`, or `None` annotations.</span>
+
+<span class="sd">    Atributes</span>
+<span class="sd">        original_annotation: `Any` if the annotation is missing or `Any`,</span>
+<span class="sd">            `None` if the annotation is `None`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">original_annotation</span><span class="p">:</span> <span class="n">NoneType</span> <span class="o">|</span> <span class="n">Any</span></div>
+
+
+
+<div class="viewcode-block" id="PrimitiveNode">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.PrimitiveNode">[docs]</a>
+<span class="nd">@frozen</span>
+<span class="k">class</span> <span class="nc">PrimitiveNode</span><span class="p">(</span><span class="n">SchemaNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Node corresponding to primitive types.</span>
+
+<span class="sd">    Primitime types are `int`, `float`, `str`, and `bool`.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        primitive_type: The primitive type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">primitive_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="SequenceNode">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.SequenceNode">[docs]</a>
+<span class="nd">@frozen</span>
+<span class="k">class</span> <span class="nc">SequenceNode</span><span class="p">(</span><span class="n">SchemaNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Node corresponding to generic homogeneous sequence types.</span>
+<span class="sd">        (Does not include tuples and strings)</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        sequence_type: The sequence type.</span>
+<span class="sd">        item_schema: The schema of the items in the sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sequence_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Sequence</span><span class="p">]</span>
+    <span class="n">item_schema</span><span class="p">:</span> <span class="n">SchemaNode</span></div>
+
+
+
+<div class="viewcode-block" id="TupleNode">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.TupleNode">[docs]</a>
+<span class="nd">@frozen</span>
+<span class="k">class</span> <span class="nc">TupleNode</span><span class="p">(</span><span class="n">SchemaNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Node corresponding to tuples and named tuples.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        tuple_type: The tuple type (`tuple`, or a subclass of `typing.NamedTuple`).</span>
+<span class="sd">        item_schemas: The schemas of the items in the tuple.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tuple_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span>
+    <span class="n">item_schemas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SchemaNode</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="MappingNode">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.MappingNode">[docs]</a>
+<span class="nd">@frozen</span>
+<span class="k">class</span> <span class="nc">MappingNode</span><span class="p">(</span><span class="n">SchemaNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Node corresponding to generic mapping types.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        mapping_type: The mapping type (e.g. `dict` or `collections.defaultdict`).</span>
+<span class="sd">        key_schema: The schema of the keys in the mapping.</span>
+<span class="sd">        value_schema: The schema of the values in the mapping.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mapping_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Mapping</span><span class="p">]</span>
+    <span class="n">key_schema</span><span class="p">:</span> <span class="n">SchemaNode</span>
+    <span class="n">value_schema</span><span class="p">:</span> <span class="n">SchemaNode</span></div>
+
+
+
+<div class="viewcode-block" id="UnionNode">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.UnionNode">[docs]</a>
+<span class="nd">@frozen</span>
+<span class="k">class</span> <span class="nc">UnionNode</span><span class="p">(</span><span class="n">SchemaNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Node corresponding to `Union` and `Optional` types.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        options: The schemas of the options in the union.</span>
+<span class="sd">            May be None in case of optional types.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">options</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SchemaNode</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="ObjectField">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.ObjectField">[docs]</a>
+<span class="nd">@frozen</span>
+<span class="k">class</span> <span class="nc">ObjectField</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Field in an object schema.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        name: Name of the field.</span>
+<span class="sd">        schema: Schema of the field.</span>
+<span class="sd">        hint: Hint extracted from the docstring.</span>
+<span class="sd">        required: Whether the field is optional or required.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaNode</span>
+    <span class="n">hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span></div>
+
+
+
+<div class="viewcode-block" id="ObjectNode">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.ObjectNode">[docs]</a>
+<span class="nd">@frozen</span>
+<span class="k">class</span> <span class="nc">ObjectNode</span><span class="p">(</span><span class="n">SchemaNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Node corresponding to composite types.</span>
+
+<span class="sd">    Represents the signature of the constructor.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Name of the object.</span>
+<span class="sd">        fields: The fields of the object.</span>
+<span class="sd">        hint: Hint extracted from the docstring.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ObjectField</span><span class="p">]</span>
+    <span class="n">hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="CallableSchema">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.CallableSchema">[docs]</a>
+<span class="nd">@frozen</span>
+<span class="k">class</span> <span class="nc">CallableSchema</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Complete schema of a function of a class.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        call_schema: Schema of the function call.</span>
+<span class="sd">        return_schema: Schema of the return value.</span>
+<span class="sd">            None if the function returns None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">call_schema</span><span class="p">:</span> <span class="n">ObjectNode</span>
+    <span class="n">return_schema</span><span class="p">:</span> <span class="n">SchemaNode</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Artur Chakhvadze &lt;norpadon@gmail.com&gt;.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
