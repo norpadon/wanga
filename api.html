@@ -63,11 +63,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.UnionNode"><code class="docutils literal notranslate"><span class="pre">UnionNode</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-wanga.schema.extract">Schema Extraction</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.extract.annotation_to_schema"><code class="docutils literal notranslate"><span class="pre">annotation_to_schema()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.extract.extract_schema"><code class="docutils literal notranslate"><span class="pre">extract_schema()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#schema-extraction">Schema Extraction</a></li>
 </ul>
 </li>
 </ul>
@@ -107,7 +103,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">CallableSchema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.ObjectNode" title="wanga.schema.schema.ObjectNode"><span class="pre">ObjectNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#CallableSchema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.CallableSchema" title="Link to this definition"></a></dt>
-<dd><p>Complete schema of a function of a class.</p>
+<dd><p>Complete schema of a function or a class.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema.call_schema">
 <span class="sig-name descname"><span class="pre">call_schema</span></span><a class="headerlink" href="#wanga.schema.schema.CallableSchema.call_schema" title="Link to this definition"></a></dt>
@@ -190,7 +186,7 @@ None if the function returns None.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">ObjectNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#wanga.schema.schema.ObjectField" title="wanga.schema.schema.ObjectField"><span class="pre">ObjectField</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#ObjectNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.ObjectNode" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">ObjectNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constructor_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#wanga.schema.schema.ObjectField" title="wanga.schema.schema.ObjectField"><span class="pre">ObjectField</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#ObjectNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.ObjectNode" title="Link to this definition"></a></dt>
 <dd><p>Node corresponding to composite types.</p>
 <p>Represents the signature of the constructor.</p>
 <dl class="py attribute">
@@ -250,6 +246,12 @@ None if the function returns None.</p>
 <dt class="sig sig-object py" id="wanga.schema.schema.SchemaNode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaNode</span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SchemaNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SchemaNode" title="Link to this definition"></a></dt>
 <dd><p>Base class for schema nodes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="wanga.schema.schema.SchemaNode.json_schema">
+<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SchemaNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SchemaNode.json_schema" title="Link to this definition"></a></dt>
+<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -343,20 +345,8 @@ May be None in case of optional types.</p>
 </dd></dl>
 
 </section>
-<section id="module-wanga.schema.extract">
-<span id="schema-extraction"></span><h3>Schema Extraction<a class="headerlink" href="#module-wanga.schema.extract" title="Link to this heading"></a></h3>
-<dl class="py function">
-<dt class="sig sig-object py" id="wanga.schema.extract.annotation_to_schema">
-<span class="sig-prename descclassname"><span class="pre">wanga.schema.extract.</span></span><span class="sig-name descname"><span class="pre">annotation_to_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a></span></span><a class="reference internal" href="_modules/wanga/schema/extract.html#annotation_to_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.extract.annotation_to_schema" title="Link to this definition"></a></dt>
-<dd><p>Extract schema from the type annotation.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="wanga.schema.extract.extract_schema">
-<span class="sig-prename descclassname"><span class="pre">wanga.schema.extract.</span></span><span class="sig-name descname"><span class="pre">extract_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wanga.schema.schema.CallableSchema" title="wanga.schema.schema.CallableSchema"><span class="pre">CallableSchema</span></a></span></span><a class="reference internal" href="_modules/wanga/schema/extract.html#extract_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.extract.extract_schema" title="Link to this definition"></a></dt>
-<dd><p>Extract schema from a callable.</p>
-</dd></dl>
-
+<section id="schema-extraction">
+<h3>Schema Extraction<a class="headerlink" href="#schema-extraction" title="Link to this heading"></a></h3>
 </section>
 </section>
 </section>

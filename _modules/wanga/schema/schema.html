@@ -76,12 +76,15 @@
   <h1>Source code for wanga.schema.schema</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">NoneType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TypeAlias</span>
 
-<span class="kn">from</span> <span class="nn">attrs</span> <span class="kn">import</span> <span class="n">frozen</span>
+<span class="kn">from</span> <span class="nn">attrs</span> <span class="kn">import</span> <span class="n">evolve</span><span class="p">,</span> <span class="n">frozen</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">TypeAnnotation</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;CallableSchema&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;JSON&quot;</span><span class="p">,</span>
     <span class="s2">&quot;MappingNode&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ObjectField&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ObjectNode&quot;</span><span class="p">,</span>
@@ -94,13 +97,21 @@
 <span class="p">]</span>
 
 
+<span class="n">JSON</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;JSON&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;JSON&quot;</span><span class="p">]</span>
+
+
 <div class="viewcode-block" id="SchemaNode">
 <a class="viewcode-back" href="../../../api.html#wanga.schema.schema.SchemaNode">[docs]</a>
 <span class="nd">@frozen</span>
 <span class="k">class</span> <span class="nc">SchemaNode</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for schema nodes.&quot;&quot;&quot;</span>
 
-    <span class="k">pass</span></div>
+<div class="viewcode-block" id="SchemaNode.json_schema">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.SchemaNode.json_schema">[docs]</a>
+    <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the JSON schema of the node to use in the LLM function call APIs.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+</div>
 
 
 
@@ -115,7 +126,7 @@
 <span class="sd">            `None` if the annotation is `None`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">original_annotation</span><span class="p">:</span> <span class="n">NoneType</span> <span class="o">|</span> <span class="n">Any</span></div>
+    <span class="n">original_annotation</span><span class="p">:</span> <span class="n">NoneType</span> <span class="o">|</span> <span class="n">TypeAnnotation</span></div>
 
 
 
@@ -235,6 +246,7 @@
 <span class="sd">        hint: Hint extracted from the docstring.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">constructor_fn</span><span class="p">:</span> <span class="n">Callable</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ObjectField</span><span class="p">]</span>
     <span class="n">hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span></div>
@@ -245,7 +257,7 @@
 <a class="viewcode-back" href="../../../api.html#wanga.schema.schema.CallableSchema">[docs]</a>
 <span class="nd">@frozen</span>
 <span class="k">class</span> <span class="nc">CallableSchema</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Complete schema of a function of a class.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Complete schema of a function or a class.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        call_schema: Schema of the function call.</span>
@@ -254,7 +266,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">call_schema</span><span class="p">:</span> <span class="n">ObjectNode</span>
-    <span class="n">return_schema</span><span class="p">:</span> <span class="n">SchemaNode</span></div>
+    <span class="n">return_schema</span><span class="p">:</span> <span class="n">SchemaNode</span>
+
+    <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSON</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">call_schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">evolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">call_schema</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json_schema</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_schema</span><span class="o">.</span><span class="n">hint</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_schema</span><span class="o">.</span><span class="n">hint</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 </pre></div>
 
