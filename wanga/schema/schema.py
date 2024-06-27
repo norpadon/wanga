@@ -1,6 +1,6 @@
 from collections.abc import Mapping, Sequence
 from types import NoneType
-from typing import Callable, Literal, TypeAlias
+from typing import Callable, TypeAlias
 
 from attrs import evolve, frozen
 
