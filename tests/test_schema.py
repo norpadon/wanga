@@ -8,14 +8,17 @@ from attrs import frozen
 from pydantic import BaseModel
 
 from wanga.schema.extractor import default_schema_extractor
+from wanga.schema.jsonschema import JsonSchemaFlavour
 from wanga.schema.normalize import normalize_annotation, unpack_optional
 from wanga.schema.schema import (
     CallableSchema,
+    LiteralNode,
     ObjectField,
     ObjectNode,
     PrimitiveNode,
     SequenceNode,
     UndefinedNode,
+    UnionNode,
 )
 
 
@@ -28,6 +31,14 @@ def test_normalize_schema():
         typing.Union[int, float]: int | float,
         typing.Optional[int]: int | None,
         typing.List: list,
+        typing.Union[typing.Union[int, float], str]: int | float | str,
+        (typing.Literal[1] | typing.Literal[2] | typing.Literal[3]): typing.Literal[
+            1, 2, 3
+        ],
+        (
+            typing.Literal[1, 2]
+            | typing.Union[typing.Literal[2, 3], typing.Literal[3, 4]]
+        ): (typing.Literal[1, 2, 3, 4]),
     }
     for annotation, result in expected.items():
         assert normalize_annotation(annotation) == result
@@ -55,7 +66,7 @@ def test_concretize_schema():
 
 
 def test_extract_schema():
-    def foo(x: int, y: str = "hello"):  # noqa
+    def foo(x: int, y: str = "hello", z: tuple[int, ...] = ()):  # noqa
         pass
 
     foo_schema = CallableSchema(
@@ -77,19 +88,30 @@ def test_extract_schema():
                     required=False,
                     hint=None,
                 ),
+                ObjectField(
+                    name="z",
+                    schema=SequenceNode(
+                        sequence_type=tuple,
+                        item_schema=PrimitiveNode(primitive_type=int),
+                    ),
+                    required=False,
+                    hint=None,
+                ),
             ],
         ),
+        long_description=None,
     )
 
     assert default_schema_extractor.extract_schema(foo) == foo_schema
 
-    def bar(x: typing.List[int]) -> int:  # noqa
+    def bar(x: typing.List[int], y: typing.Literal["hehe"] | float) -> int:  # noqa
         r"""Bar.
 
         Blah blah blah.
 
         Args:
             x: The x.
+            y: Hard example.
         """
         return 0
 
@@ -109,8 +131,20 @@ def test_extract_schema():
                     required=True,
                     hint="The x.",
                 ),
+                ObjectField(
+                    name="y",
+                    schema=UnionNode(
+                        [
+                            PrimitiveNode(primitive_type=float),
+                            LiteralNode(options=["hehe"]),
+                        ]
+                    ),
+                    required=True,
+                    hint="Hard example.",
+                ),
             ],
         ),
+        long_description="Blah blah blah.",
     )
 
     assert default_schema_extractor.extract_schema(bar) == bar_schema
@@ -147,6 +181,7 @@ def test_extract_schema():
                 ),
             ],
         ),
+        long_description=None,
     )
 
     assert default_schema_extractor.extract_schema(Baz) == baz_schema
@@ -186,6 +221,7 @@ def test_extract_schema():
                 ),
             ],
         ),
+        long_description="I have attributes instead of arguments!",
     )
 
     assert default_schema_extractor.extract_schema(Qux) == qux_schema
@@ -258,6 +294,7 @@ def test_extract_schema():
                 ),
             ],
         ),
+        long_description="I am a dataclass, and I use the stupid ReST docstring syntax!",
     )
 
     assert default_schema_extractor.extract_schema(Goo) == goo_schema
@@ -266,7 +303,7 @@ def test_extract_schema():
         r"""I am Hoo.
 
         I am a Pydantic model!
-        And I use Numpy Doc format!.
+        And I use Numpy Doc format!
 
         Parameters
         ----------
@@ -309,6 +346,75 @@ def test_extract_schema():
                 ),
             ],
         ),
+        long_description="I am a Pydantic model!\nAnd I use Numpy Doc format!",
     )
 
     assert default_schema_extractor.extract_schema(Hoo) == hoo_schema
+
+
+def test_json_schema():
+    @frozen
+    class Inner:
+        """Inner.
+
+        Long description of Inner.
+
+        Attributes:
+            x: The x.
+        """
+
+        x: int
+
+    def foo(
+        a: int,
+        b: str,
+        c: Inner,
+        d: tuple[int, ...] = (),
+        e: typing.Literal["x", "y"] = "x",
+        f: str | int = 1,
+    ):
+        r"""Foo!
+
+        Long description of foo.
+
+        Args:
+            a: The a.
+            b: The b.
+            c: The c.
+        """
+
+    expected_json_schema = {
+        "name": "foo",
+        "description": "Foo!\n\nLong description of foo.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "a": {"type": "integer", "description": "The a."},
+                "b": {"type": "string", "description": "The b."},
+                "c": {
+                    "type": "object",
+                    "properties": {"x": {"type": "integer", "description": "The x."}},
+                    "required": ["x"],
+                    "description": "The c.\n\nInner.",
+                },
+                "d": {
+                    "type": "array",
+                    "items": {"type": "integer"},
+                },
+                "e": {
+                    "type": "string",
+                    "enum": ["x", "y"],
+                },
+                "f": {
+                    "type": ["integer", "string"],
+                },
+            },
+            "required": ["a", "b", "c"],
+        },
+    }
+
+    core_schema = default_schema_extractor.extract_schema(foo)
+    json_schema = core_schema.json_schema(
+        JsonSchemaFlavour.OPENAI, include_long_description=True
+    )
+    assert json_schema == expected_json_schema

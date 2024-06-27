@@ -4,6 +4,6 @@ __all__ = [
     "TypeAnnotation",
 ]
 
-# Python doesn't have a way to speciy a type annotation for type annotations,
+# Python doesn't have a way to specify a type annotation for type annotations,
 # so we use `Any` as a placeholder.
 TypeAnnotation: TypeAlias = Any

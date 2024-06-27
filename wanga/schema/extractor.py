@@ -1,7 +1,7 @@
 import inspect
 from collections.abc import Callable
 from types import NoneType, UnionType
-from typing import Any, get_args, get_origin
+from typing import Any, Literal, Union, get_args, get_origin
 
 from attrs import define, field, frozen
 from docstring_parser import parse as parse_docstring
@@ -10,6 +10,7 @@ from .extractor_fns import ExtractorFn, extract_datetime
 from .normalize import normalize_annotation
 from .schema import (
     CallableSchema,
+    LiteralNode,
     MappingNode,
     ObjectField,
     ObjectNode,
@@ -30,6 +31,7 @@ __all__ = [
 @frozen
 class DocstringHints:
     object_hint: str | None
+    long_decsription: str | None
     param_to_hint: dict[str, str]
 
 
@@ -45,7 +47,7 @@ class SchemaExtractor:
     If you want to add new extraction functions, use the `register_extract_fn` method.
 
     Attributes:
-        exctractor_functions: List of functions that take type annotation as an input
+        extractor_functions: List of functions that take type annotation as an input
             and try to produce the `CallableSchema`.
     """
 
@@ -66,6 +68,7 @@ class SchemaExtractor:
         if docstring is not None:
             docstring = parse_docstring(docstring)
             object_hint = docstring.short_description
+            long_description = docstring.long_description
             param_to_hint = {
                 param.arg_name: param.description
                 for param in docstring.params
@@ -73,14 +76,20 @@ class SchemaExtractor:
             }
         else:
             object_hint = None
+            long_description = None
             param_to_hint = {}
 
         if isinstance(callable, type) and hasattr(callable, "__init__"):
             init_hints = self.extract_hints(callable.__init__)
             object_hint = object_hint or init_hints.object_hint
+            long_description = long_description or init_hints.long_decsription
             param_to_hint.update(init_hints.param_to_hint)
 
-        return DocstringHints(object_hint, param_to_hint)
+        return DocstringHints(
+            object_hint,
+            long_description,
+            param_to_hint,
+        )
 
     def annotation_to_schema(self, annotation) -> SchemaNode:
         if annotation in [Any, None]:
@@ -99,6 +108,22 @@ class SchemaExtractor:
             init_schema = self.extract_schema(annotation)
             return init_schema.call_schema
 
+        if origin is Literal:
+            return LiteralNode(options=list(args))
+
+        if origin in [Union, UnionType]:
+            # Reader may think that the second check is unnecessary, since Unions should have been
+            # converted to `|` by the normalization step. Unfortunately, Literal[1] | str
+            # will evaluate to Union, and not UnionType, so we have to check against both,
+            # Union and UnionType.
+            arg_schemas = []
+            for arg in args:
+                if arg is NoneType:
+                    arg_schemas.append(None)
+                else:
+                    arg_schemas.append(self.annotation_to_schema(arg))
+            return UnionNode(options=arg_schemas)
+
         # Normalization step has already converted all abstract classes to the corresponding concrete types.
         # So we can safely check against list and dict.
         if issubclass(origin, list):
@@ -110,6 +135,11 @@ class SchemaExtractor:
                 item_schema=self.annotation_to_schema(args[0]),
             )
         if issubclass(origin, tuple):
+            if len(args) == 2 and args[1] is Ellipsis:
+                return SequenceNode(
+                    sequence_type=origin,
+                    item_schema=self.annotation_to_schema(args[0]),
+                )
             return TupleNode(
                 tuple_type=origin,
                 item_schemas=[self.annotation_to_schema(arg) for arg in args],
@@ -123,14 +153,6 @@ class SchemaExtractor:
                 key_schema=self.annotation_to_schema(args[0]),
                 value_schema=self.annotation_to_schema(args[1]),
             )
-        if issubclass(origin, UnionType):
-            arg_schemas = []
-            for arg in args:
-                if arg is NoneType:
-                    arg_schemas.append(None)
-                else:
-                    arg_schemas.append(self.annotation_to_schema(arg))
-            return UnionNode(options=arg_schemas)
 
         raise ValueError(f"Unsupported type annotation: {annotation}")
 
@@ -139,7 +161,9 @@ class SchemaExtractor:
         try:
             return self._extract_schema_impl(callable)
         except Exception as e:
-            raise SchemaExtractionError(f"Failed to extract schema for {callable}: {e}")
+            raise SchemaExtractionError(
+                f"Failed to extract schema for {callable}"
+            ) from e
 
     def _extract_schema_impl(self, callable: Callable) -> CallableSchema:
         for fn in self.exctractor_fns:
@@ -193,6 +217,7 @@ class SchemaExtractor:
                 hint=hints.object_hint,
             ),
             return_schema=return_schema,
+            long_description=hints.long_decsription,
         )
 
 

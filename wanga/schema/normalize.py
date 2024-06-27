@@ -2,7 +2,7 @@ import collections
 import collections.abc
 import typing  # noqa
 from types import NoneType, UnionType
-from typing import Annotated, Union, get_args, get_origin
+from typing import Annotated, Literal, Union, get_args, get_origin
 
 from .utils import TypeAnnotation
 
@@ -42,58 +42,33 @@ def unpack_optional(annotation: TypeAnnotation) -> type[UnionType] | None:
     return _fold_or(result)
 
 
-# Those aliases are automatically resolved by the `typing.get_origin`, so there is no
-# direct need to handle them explicitly, by we still include them here for the reference
-# purposes.
-#
-# GENERIC_ALIASES = {
-#     # Basic aliases
-#     typing.Dict: dict,
-#     typing.List: list,
-#     typing.Set: set,
-#     typing.FrozenSet: frozenset,
-#     typing.Tuple: tuple,
-#     typing.Type: type,
-#     # collections aliases
-#     typing.DefaultDict: collections.defaultdict,
-#     typing.OrderedDict: collections.OrderedDict,
-#     typing.ChainMap: collections.ChainMap,
-#     typing.Counter: collections.Counter,
-#     typing.Deque: collections.deque,
-#     # re aliases
-#     typing.Pattern: re.Pattern,
-#     typing.Match: re.Match,
-#     typing.Text: str,
-#     # collections.abc aliases
-#     typing.AbstractSet: collections.abc.Set,
-#     typing.ByteString: collections.abc.ByteString,
-#     typing.Collection: collections.abc.Collection,
-#     typing.Container: collections.abc.Container,
-#     typing.ItemsView: collections.abc.ItemsView,
-#     typing.KeysView: collections.abc.KeysView,
-#     typing.Mapping: collections.abc.Mapping,
-#     typing.MappingView: collections.abc.MappingView,
-#     typing.MutableMapping: collections.abc.MutableMapping,
-#     typing.MutableSequence: collections.abc.MutableSequence,
-#     typing.MutableSet: collections.abc.MutableSet,
-#     typing.Sequence: collections.abc.Sequence,
-#     typing.ValuesView: collections.abc.ValuesView,
-#     typing.Coroutine: collections.abc.Coroutine,
-#     typing.AsyncGenerator: collections.abc.AsyncGenerator,
-#     typing.AsyncIterable: collections.abc.AsyncIterable,
-#     typing.AsyncIterator: collections.abc.AsyncIterator,
-#     typing.Awaitable: collections.abc.Awaitable,
-#     typing.Generator: collections.abc.Generator,
-#     typing.Iterable: collections.abc.Iterable,
-#     typing.Iterator: collections.abc.Iterator,
-#     typing.Callable: collections.abc.Callable,
-#     typing.Hashable: collections.abc.Hashable,
-#     typing.Reversible: collections.abc.Reversible,
-#     typing.Sized: collections.abc.Sized,
-#     # contextlib aliases
-#     typing.ContextManager: contextlib.AbstractContextManager,
-#     typing.AsyncContextManager: contextlib.AbstractAsyncContextManager,
-# }
+def normalize_literals(annotation: TypeAnnotation) -> TypeAnnotation:
+    r"""Merges literals within unions.
+
+    Examples:
+    >>> normalize_literals(typing.Literal[1] | typing.Literal[2])
+    typing.Literal[1, 2]
+    >>> normalize_literals(typing.Literal[1] | typing.Literal[2] | str)
+    typing.Union[str, typing.Literal[1, 2]]
+    """
+    origin = get_origin(annotation)
+    args = get_args(annotation)
+    if origin in [Literal, None]:
+        return annotation
+    args = tuple(normalize_literals(arg) for arg in args)
+    if origin in [Union, UnionType]:
+        literals = []
+        non_literals = []
+        for arg in args:
+            if get_origin(arg) is Literal:
+                literals.extend(get_args(arg))
+            else:
+                non_literals.append(arg)
+        new_args = list(non_literals)
+        if literals:
+            new_args.append(Literal[tuple(literals)])  # type: ignore
+        return _fold_or(new_args)
+    return origin[args]
 
 
 ABSTRACT_TO_CONCRETE = {
@@ -114,6 +89,28 @@ ABSTRACT_TO_CONCRETE = {
     collections.abc.Sized: list,
     collections.abc.Reversible: list,
 }
+
+
+def _normalize_annotation_rec(
+    annotation: TypeAnnotation, concretize: bool = False
+) -> TypeAnnotation:
+    origin = get_origin(annotation)
+    args = get_args(annotation)
+    if origin is None:
+        return annotation
+    if args:
+        args = tuple(
+            _normalize_annotation_rec(arg, concretize=concretize) for arg in args
+        )
+    if origin is Annotated:
+        return args[0]
+    if origin in [Union, UnionType]:
+        return _fold_or(args)
+    if concretize:
+        origin = ABSTRACT_TO_CONCRETE.get(origin, origin)
+    if args:
+        return origin[args]
+    return origin
 
 
 def normalize_annotation(
@@ -137,19 +134,9 @@ def normalize_annotation(
     collections.abc.Sequence[int]
     >>> normalize_annotation(collections.abc.Sequence[int], concretize=True)
     list[int]
+    >>> normalize_annotation(typing.Literal[1] | typing.Literal[2])
+    typing.Literal[1, 2]
     """
-    origin = get_origin(annotation)
-    args = get_args(annotation)
-    if origin is None:
-        return annotation
-    if args:
-        args = tuple(normalize_annotation(arg, concretize=concretize) for arg in args)
-    if origin is Annotated:
-        return args[0]
-    if origin is Union:
-        return _fold_or(args)
-    if concretize:
-        origin = ABSTRACT_TO_CONCRETE.get(origin, origin)
-    if args:
-        return origin[args]
-    return origin
+    result = normalize_literals(annotation)
+    result = _normalize_annotation_rec(result, concretize=concretize)
+    return result

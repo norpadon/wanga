@@ -29,9 +29,9 @@ def _get_datetime_arg(name: str, required: bool = True) -> ObjectField:
 
 def extract_datetime(annotation: TypeAnnotation) -> CallableSchema | None:
     date_fields = ["year", "month", "day"]
-    time_fields = ["hour", "minute", "second"]  # We deliberaly omit microseconds
+    time_fields = ["hour", "minute", "second"]  # We deliberately omit microseconds
 
-    delta_fields = ["days", "seconds"]  # We deliberaly omit microseconds
+    delta_fields = ["days", "seconds"]  # We deliberately omit microseconds
 
     fields = []
     if annotation in [date, datetime]:
@@ -52,4 +52,5 @@ def extract_datetime(annotation: TypeAnnotation) -> CallableSchema | None:
             hint=None,
         ),
         return_schema=UndefinedNode(original_annotation=None),
+        long_description=None,
     )
