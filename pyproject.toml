@@ -19,12 +19,17 @@ openai = "^1.35.3"
 anthropic = "^0.29.0"
 ruff-lsp = "^0.0.53"
 isort = "^5.13.2"
+pyright = "^1.1.369"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^7.3.7"
 sphinx-rtd-theme = "^2.0.0"
 sphinxcontrib-napoleon = "^0.7"
 toml = "^0.10.2"
+
+[tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "standard"
 
 [build-system]
 requires = ["poetry-core"]
