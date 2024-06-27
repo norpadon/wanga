@@ -102,7 +102,7 @@
 <span id="schema-definition"></span><h3>Schema Definition<a class="headerlink" href="#module-wanga.schema.schema" title="Link to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">CallableSchema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.ObjectNode" title="wanga.schema.schema.ObjectNode"><span class="pre">ObjectNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#CallableSchema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.CallableSchema" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">CallableSchema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.ObjectNode" title="wanga.schema.schema.ObjectNode"><span class="pre">ObjectNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">long_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#CallableSchema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.CallableSchema" title="Link to this definition"></a></dt>
 <dd><p>Complete schema of a function or a class.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema.call_schema">
@@ -123,6 +123,19 @@ None if the function returns None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode">wanga.schema.schema.SchemaNode</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema.long_description">
+<span class="sig-name descname"><span class="pre">long_description</span></span><a class="headerlink" href="#wanga.schema.schema.CallableSchema.long_description" title="Link to this definition"></a></dt>
+<dd><p>Long description extracted from the docstring.
+It is used to pass tool descriptions to LLMs. It is not used
+for return values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str | None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -162,6 +175,17 @@ None if the function returns None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode">wanga.schema.schema.SchemaNode</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wanga.schema.schema.MappingNode.json_schema">
+<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnumJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ObjectJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ArrayJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#MappingNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.MappingNode.json_schema" title="Link to this definition"></a></dt>
+<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -222,6 +246,17 @@ None if the function returns None.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode.json_schema">
+<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ObjectJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#ObjectNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.ObjectNode.json_schema" title="Link to this definition"></a></dt>
+<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -240,6 +275,17 @@ None if the function returns None.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="wanga.schema.schema.PrimitiveNode.json_schema">
+<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#PrimitiveNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.PrimitiveNode.json_schema" title="Link to this definition"></a></dt>
+<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -248,8 +294,13 @@ None if the function returns None.</p>
 <dd><p>Base class for schema nodes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="wanga.schema.schema.SchemaNode.json_schema">
-<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SchemaNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SchemaNode.json_schema" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnumJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ObjectJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ArrayJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SchemaNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SchemaNode.json_schema" title="Link to this definition"></a></dt>
 <dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -283,6 +334,17 @@ None if the function returns None.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="wanga.schema.schema.SequenceNode.json_schema">
+<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SequenceNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SequenceNode.json_schema" title="Link to this definition"></a></dt>
+<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -311,6 +373,17 @@ None if the function returns None.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="wanga.schema.schema.TupleNode.json_schema">
+<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnumJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ObjectJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ArrayJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#TupleNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.TupleNode.json_schema" title="Link to this definition"></a></dt>
+<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -324,6 +397,17 @@ None if the function returns None.</p>
 </dl>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="wanga.schema.schema.UndefinedNode.json_schema">
+<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#UndefinedNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.UndefinedNode.json_schema" title="Link to this definition"></a></dt>
+<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -338,6 +422,17 @@ May be None in case of optional types.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[<a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode">wanga.schema.schema.SchemaNode</a> | None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wanga.schema.schema.UnionNode.json_schema">
+<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnumJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ObjectJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ArrayJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#UnionNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.UnionNode.json_schema" title="Link to this definition"></a></dt>
+<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
 </dd>
 </dl>
 </dd></dl>
