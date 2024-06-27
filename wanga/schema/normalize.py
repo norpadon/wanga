@@ -4,20 +4,22 @@ import typing  # noqa
 from types import NoneType, UnionType
 from typing import Annotated, Union, get_args, get_origin
 
+from .utils import TypeAnnotation
+
 __all__ = [
     "normalize_annotation",
     "unpack_optional",
 ]
 
 
-def _fold_or(annotations: collections.abc.Sequence) -> type[UnionType]:
+def _fold_or(annotations: collections.abc.Sequence[TypeAnnotation]) -> type[UnionType]:
     result = annotations[0]
     for annotation in annotations[1:]:
         result = result | annotation
     return result
 
 
-def unpack_optional(annotation) -> type[UnionType] | None:
+def unpack_optional(annotation: TypeAnnotation) -> type[UnionType] | None:
     r"""Unpack Optional[T] to its inner type T.
 
     Returns None if the annotation is not Optional[T].
@@ -40,6 +42,10 @@ def unpack_optional(annotation) -> type[UnionType] | None:
     return _fold_or(result)
 
 
+# Those aliases are automatically resolved by the `typing.get_origin`, so there is no
+# direct need to handle them explicitly, by we still include them here for the reference
+# purposes.
+#
 # GENERIC_ALIASES = {
 #     # Basic aliases
 #     typing.Dict: dict,
@@ -90,22 +96,6 @@ def unpack_optional(annotation) -> type[UnionType] | None:
 # }
 
 
-def _recursively_map_annotation(annotation, func, strip_annotated=False):
-    origin = get_origin(annotation)
-    args = get_args(annotation)
-    if origin is None:
-        return func(annotation)
-    new_origin = func(origin)
-    new_args = tuple(
-        _recursively_map_annotation(arg, func, strip_annotated) for arg in args
-    )
-    if strip_annotated and origin is Annotated:
-        return new_args[0]
-    if new_args:
-        return new_origin[new_args]
-    return new_origin
-
-
 ABSTRACT_TO_CONCRETE = {
     collections.abc.Set: set,
     collections.abc.ByteString: bytes,
@@ -126,7 +116,9 @@ ABSTRACT_TO_CONCRETE = {
 }
 
 
-def normalize_annotation(annotation, concretize: bool = False):
+def normalize_annotation(
+    annotation: TypeAnnotation, concretize: bool = False
+) -> TypeAnnotation:
     r"""Normalize a type annotation to a standard form.
 
     Strips `Annotated` tags and replaces generic aliases with corresponding generic types.

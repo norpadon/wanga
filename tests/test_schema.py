@@ -1,10 +1,13 @@
 import collections
 import collections.abc
 import typing
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 from attrs import frozen
+from pydantic import BaseModel
 
-from wanga.schema.extract import extract_schema
+from wanga.schema.extractor import default_schema_extractor
 from wanga.schema.normalize import normalize_annotation, unpack_optional
 from wanga.schema.schema import (
     CallableSchema,
@@ -58,6 +61,7 @@ def test_extract_schema():
     foo_schema = CallableSchema(
         return_schema=UndefinedNode(original_annotation=typing.Any),
         call_schema=ObjectNode(
+            constructor_fn=foo,
             name="foo",
             hint=None,
             fields=[
@@ -77,7 +81,7 @@ def test_extract_schema():
         ),
     )
 
-    assert extract_schema(foo) == foo_schema
+    assert default_schema_extractor.extract_schema(foo) == foo_schema
 
     def bar(x: typing.List[int]) -> int:  # noqa
         r"""Bar.
@@ -92,6 +96,7 @@ def test_extract_schema():
     bar_schema = CallableSchema(
         return_schema=PrimitiveNode(primitive_type=int),
         call_schema=ObjectNode(
+            constructor_fn=bar,
             name="bar",
             hint="Bar.",
             fields=[
@@ -108,7 +113,7 @@ def test_extract_schema():
         ),
     )
 
-    assert extract_schema(bar) == bar_schema
+    assert default_schema_extractor.extract_schema(bar) == bar_schema
 
     class Baz:
         r"""I am Baz."""
@@ -124,6 +129,7 @@ def test_extract_schema():
     baz_schema = CallableSchema(
         return_schema=UndefinedNode(original_annotation=typing.Any),
         call_schema=ObjectNode(
+            constructor_fn=Baz,
             name="Baz",
             hint="I am Baz.",
             fields=[
@@ -143,11 +149,11 @@ def test_extract_schema():
         ),
     )
 
-    assert extract_schema(Baz) == baz_schema
+    assert default_schema_extractor.extract_schema(Baz) == baz_schema
 
     @frozen
     class Qux:
-        """I am Qux.
+        r"""I am Qux.
 
         I have attributes instead of arguments!
 
@@ -162,6 +168,7 @@ def test_extract_schema():
     qux_schema = CallableSchema(
         return_schema=UndefinedNode(original_annotation=None),
         call_schema=ObjectNode(
+            constructor_fn=Qux,
             name="Qux",
             hint="I am Qux.",
             fields=[
@@ -181,4 +188,127 @@ def test_extract_schema():
         ),
     )
 
-    assert extract_schema(Qux) == qux_schema
+    assert default_schema_extractor.extract_schema(Qux) == qux_schema
+
+    @dataclass
+    class Goo:
+        r"""I am Goo.
+
+        I am a dataclass, and I use the stupid ReST docstring syntax!
+
+        :param date: Ohoho, good luck.
+        """
+
+        date: datetime
+
+    goo_schema = CallableSchema(
+        return_schema=UndefinedNode(original_annotation=None),
+        call_schema=ObjectNode(
+            constructor_fn=Goo,
+            name="Goo",
+            hint="I am Goo.",
+            fields=[
+                ObjectField(
+                    name="date",
+                    schema=ObjectNode(
+                        constructor_fn=datetime,
+                        name="datetime",
+                        hint=None,
+                        fields=[
+                            ObjectField(
+                                name="year",
+                                schema=PrimitiveNode(primitive_type=int),
+                                required=True,
+                                hint=None,
+                            ),
+                            ObjectField(
+                                name="month",
+                                schema=PrimitiveNode(primitive_type=int),
+                                required=True,
+                                hint=None,
+                            ),
+                            ObjectField(
+                                name="day",
+                                schema=PrimitiveNode(primitive_type=int),
+                                required=True,
+                                hint=None,
+                            ),
+                            ObjectField(
+                                name="hour",
+                                schema=PrimitiveNode(primitive_type=int),
+                                required=False,
+                                hint=None,
+                            ),
+                            ObjectField(
+                                name="minute",
+                                schema=PrimitiveNode(primitive_type=int),
+                                required=False,
+                                hint=None,
+                            ),
+                            ObjectField(
+                                name="second",
+                                schema=PrimitiveNode(primitive_type=int),
+                                required=False,
+                                hint=None,
+                            ),
+                        ],
+                    ),
+                    required=True,
+                    hint="Ohoho, good luck.",
+                ),
+            ],
+        ),
+    )
+
+    assert default_schema_extractor.extract_schema(Goo) == goo_schema
+
+    class Hoo(BaseModel):
+        r"""I am Hoo.
+
+        I am a Pydantic model!
+        And I use Numpy Doc format!.
+
+        Parameters
+        ----------
+        delta : timedelta
+            Thou shall not pass!
+        """
+
+        delta: timedelta
+
+    hoo_schema = CallableSchema(
+        return_schema=UndefinedNode(original_annotation=None),
+        call_schema=ObjectNode(
+            constructor_fn=Hoo,
+            name="Hoo",
+            hint="I am Hoo.",
+            fields=[
+                ObjectField(
+                    name="delta",
+                    schema=ObjectNode(
+                        constructor_fn=timedelta,
+                        name="timedelta",
+                        hint=None,
+                        fields=[
+                            ObjectField(
+                                name="days",
+                                schema=PrimitiveNode(primitive_type=int),
+                                required=False,
+                                hint=None,
+                            ),
+                            ObjectField(
+                                name="seconds",
+                                schema=PrimitiveNode(primitive_type=int),
+                                required=False,
+                                hint=None,
+                            ),
+                        ],
+                    ),
+                    required=True,
+                    hint="Thou shall not pass!",
+                ),
+            ],
+        ),
+    )
+
+    assert default_schema_extractor.extract_schema(Hoo) == hoo_schema

@@ -1,11 +1,14 @@
 from collections.abc import Mapping, Sequence
 from types import NoneType
-from typing import Any
+from typing import Callable, TypeAlias
 
-from attrs import frozen
+from attrs import evolve, frozen
+
+from .utils import TypeAnnotation
 
 __all__ = [
     "CallableSchema",
+    "JSON",
     "MappingNode",
     "ObjectField",
     "ObjectNode",
@@ -18,11 +21,16 @@ __all__ = [
 ]
 
 
+JSON: TypeAlias = int | float | str | None | dict[str, "JSON"] | list["JSON"]
+
+
 @frozen
 class SchemaNode:
     r"""Base class for schema nodes."""
 
-    pass
+    def json_schema(self) -> JSON:
+        r"""Returns the JSON schema of the node to use in the LLM function call APIs."""
+        raise NotImplementedError
 
 
 @frozen
@@ -34,7 +42,7 @@ class UndefinedNode(SchemaNode):
             `None` if the annotation is `None`.
     """
 
-    original_annotation: NoneType | Any
+    original_annotation: NoneType | TypeAnnotation
 
 
 @frozen
@@ -133,6 +141,7 @@ class ObjectNode(SchemaNode):
         hint: Hint extracted from the docstring.
     """
 
+    constructor_fn: Callable
     name: str
     fields: list[ObjectField]
     hint: str | None
@@ -140,7 +149,7 @@ class ObjectNode(SchemaNode):
 
 @frozen
 class CallableSchema:
-    r"""Complete schema of a function of a class.
+    r"""Complete schema of a function or a class.
 
     Attributes:
         call_schema: Schema of the function call.
@@ -150,3 +159,12 @@ class CallableSchema:
 
     call_schema: ObjectNode
     return_schema: SchemaNode
+
+    def json_schema(self) -> JSON:
+        result = dict(
+            name=self.call_schema.name,
+            parameters=evolve(self.call_schema, hint=None).json_schema(),
+        )
+        if self.call_schema.hint:
+            result["description"] = self.call_schema.hint
+        return result
