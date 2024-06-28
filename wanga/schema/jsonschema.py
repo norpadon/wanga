@@ -4,7 +4,7 @@ from enum import Enum
 from typing import Literal, TypeAlias, TypedDict
 
 __all__ = [
-    "JsonSchemaFlavour",
+    "JsonSchemaFlavor",
     "LeafJsonSchema",
     "EnumJsonSchema",
     "ObjectJsonSchema",
@@ -61,7 +61,7 @@ class OpenAICallableSchema(TypedDict, total=False):
     parameters: ObjectJsonSchema
 
 
-class JsonSchemaFlavour(Enum):
+class JsonSchemaFlavor(Enum):
     r"""Top-level layout of the JSON schema as accepted by different LLMS."""
 
     OPENAI = "openai"

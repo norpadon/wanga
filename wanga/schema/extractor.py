@@ -6,6 +6,8 @@ from typing import Any, Literal, Union, get_args, get_origin
 from attrs import define, field, frozen
 from docstring_parser import parse as parse_docstring
 
+from wanga.schema.utils import strip_self
+
 from .extractor_fns import ExtractorFn, extract_datetime
 from .normalize import normalize_annotation
 from .schema import (
@@ -178,13 +180,7 @@ class SchemaExtractor:
             # correctly by `inspect.signature`. In such cases, we fall back to
             # `__init__` signature, but we still use the original docstring for hints.
             signature = inspect.signature(callable.__init__, eval_str=True)
-            signature = signature.replace(
-                parameters=[
-                    param
-                    for name, param in signature.parameters.items()
-                    if name != "self"
-                ]
-            )
+            signature = strip_self(signature)
 
         return_type = signature.return_annotation
 
@@ -212,6 +208,7 @@ class SchemaExtractor:
         return CallableSchema(
             call_schema=ObjectNode(
                 constructor_fn=callable,
+                constructor_signature=signature,
                 name=callable.__name__,
                 fields=object_fields,
                 hint=hints.object_hint,

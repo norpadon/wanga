@@ -1,3 +1,4 @@
+import inspect
 from datetime import date, datetime, time, timedelta
 from typing import Callable, TypeAlias
 
@@ -8,7 +9,7 @@ from .schema import (
     PrimitiveNode,
     UndefinedNode,
 )
-from .utils import TypeAnnotation
+from .utils import TypeAnnotation, strip_self
 
 ExtractorFn: TypeAlias = Callable[[TypeAnnotation], CallableSchema | None]
 
@@ -47,6 +48,7 @@ def extract_datetime(annotation: TypeAnnotation) -> CallableSchema | None:
     return CallableSchema(
         call_schema=ObjectNode(
             constructor_fn=annotation,
+            constructor_signature=strip_self(inspect.signature(annotation.__init__)),
             name=annotation.__name__,
             fields=fields,
             hint=None,

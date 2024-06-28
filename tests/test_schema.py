@@ -1,5 +1,6 @@
 import collections
 import collections.abc
+import inspect
 import typing
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -8,7 +9,7 @@ from attrs import frozen
 from pydantic import BaseModel
 
 from wanga.schema.extractor import default_schema_extractor
-from wanga.schema.jsonschema import JsonSchemaFlavour
+from wanga.schema.jsonschema import JsonSchemaFlavor
 from wanga.schema.normalize import normalize_annotation, unpack_optional
 from wanga.schema.schema import (
     CallableSchema,
@@ -20,6 +21,7 @@ from wanga.schema.schema import (
     UndefinedNode,
     UnionNode,
 )
+from wanga.schema.utils import strip_self
 
 
 def test_normalize_schema():
@@ -73,6 +75,7 @@ def test_extract_schema():
         return_schema=UndefinedNode(original_annotation=typing.Any),
         call_schema=ObjectNode(
             constructor_fn=foo,
+            constructor_signature=inspect.signature(foo),
             name="foo",
             hint=None,
             fields=[
@@ -119,6 +122,7 @@ def test_extract_schema():
         return_schema=PrimitiveNode(primitive_type=int),
         call_schema=ObjectNode(
             constructor_fn=bar,
+            constructor_signature=inspect.signature(bar),
             name="bar",
             hint="Bar.",
             fields=[
@@ -164,6 +168,7 @@ def test_extract_schema():
         return_schema=UndefinedNode(original_annotation=typing.Any),
         call_schema=ObjectNode(
             constructor_fn=Baz,
+            constructor_signature=inspect.signature(Baz),
             name="Baz",
             hint="I am Baz.",
             fields=[
@@ -204,6 +209,7 @@ def test_extract_schema():
         return_schema=UndefinedNode(original_annotation=None),
         call_schema=ObjectNode(
             constructor_fn=Qux,
+            constructor_signature=inspect.signature(Qux),
             name="Qux",
             hint="I am Qux.",
             fields=[
@@ -241,6 +247,7 @@ def test_extract_schema():
         return_schema=UndefinedNode(original_annotation=None),
         call_schema=ObjectNode(
             constructor_fn=Goo,
+            constructor_signature=inspect.signature(Goo),
             name="Goo",
             hint="I am Goo.",
             fields=[
@@ -248,6 +255,9 @@ def test_extract_schema():
                     name="date",
                     schema=ObjectNode(
                         constructor_fn=datetime,
+                        constructor_signature=strip_self(
+                            inspect.signature(datetime.__init__)
+                        ),
                         name="datetime",
                         hint=None,
                         fields=[
@@ -317,6 +327,7 @@ def test_extract_schema():
         return_schema=UndefinedNode(original_annotation=None),
         call_schema=ObjectNode(
             constructor_fn=Hoo,
+            constructor_signature=inspect.signature(Hoo),
             name="Hoo",
             hint="I am Hoo.",
             fields=[
@@ -324,6 +335,9 @@ def test_extract_schema():
                     name="delta",
                     schema=ObjectNode(
                         constructor_fn=timedelta,
+                        constructor_signature=strip_self(
+                            inspect.signature(timedelta.__init__)
+                        ),
                         name="timedelta",
                         hint=None,
                         fields=[
@@ -415,6 +429,32 @@ def test_json_schema():
 
     core_schema = default_schema_extractor.extract_schema(foo)
     json_schema = core_schema.json_schema(
-        JsonSchemaFlavour.OPENAI, include_long_description=True
+        JsonSchemaFlavor.OPENAI, include_long_description=True
     )
     assert json_schema == expected_json_schema
+
+
+def test_eval():
+    @frozen
+    class Hehe:
+        hehehe: int
+
+    def foo(
+        x: float,
+        /,
+        y: int = 3,
+        *,
+        z: typing.Literal["a", "b"],
+        hehe: Hehe | None = None,
+    ):
+        return x
+
+    json_input = {
+        "x": 1,
+        "y": 2,
+        "z": "a",
+        "hehe": {"hehehe": 3},
+    }
+
+    core_schema = default_schema_extractor.extract_schema(foo)
+    assert core_schema.eval(json_input) == 1.0

@@ -1,6 +1,7 @@
 from collections.abc import Mapping, Sequence
+from inspect import Signature
 from types import NoneType
-from typing import Callable, TypeAlias
+from typing import Callable, NoReturn, TypeAlias
 
 from attrs import evolve, frozen
 
@@ -10,7 +11,7 @@ from .jsonschema import (
     CallableJsonSchema,
     EnumJsonSchema,
     JsonSchema,
-    JsonSchemaFlavour,
+    JsonSchemaFlavor,
     LeafJsonSchema,
     LeafTypeName,
     ObjectJsonSchema,
@@ -33,7 +34,7 @@ __all__ = [
 ]
 
 
-JSON: TypeAlias = int | float | str | None | dict[str, "JSON"] | list["JSON"]
+JSON: TypeAlias = int | float | str | bool | None | dict[str, "JSON"] | list["JSON"]
 
 
 type_to_jsonname: dict[type | None, LeafTypeName] = {
@@ -45,7 +46,11 @@ type_to_jsonname: dict[type | None, LeafTypeName] = {
 }
 
 
-class JsonSchemaGenerationError(ValueError):
+class UnsupportedSchemaError(ValueError):
+    pass
+
+
+class SchemaValidationError(ValueError):
     pass
 
 
@@ -61,6 +66,10 @@ class SchemaNode:
         """
         raise NotImplementedError
 
+    def eval(self, value: JSON):
+        r"""Evaluate the value against the schema."""
+        raise NotImplementedError
+
 
 @frozen
 class UndefinedNode(SchemaNode):
@@ -74,9 +83,12 @@ class UndefinedNode(SchemaNode):
     original_annotation: NoneType | TypeAnnotation
 
     def json_schema(self, parent_hint: str | None = None) -> LeafJsonSchema:
-        raise JsonSchemaGenerationError(
+        raise UnsupportedSchemaError(
             "JSON schema cannot be generated for missing or undefined annotations."
         )
+
+    def eval(self, value: JSON) -> NoReturn:
+        raise UnsupportedSchemaError("Cannot evaluate undefined schema.")
 
 
 @frozen
@@ -99,6 +111,16 @@ class PrimitiveNode(SchemaNode):
             result["description"] = parent_hint
         return result
 
+    def eval(self, value: JSON) -> int | float | str | bool:
+        if not isinstance(value, self.primitive_type):
+            if self.primitive_type is float and isinstance(value, int):
+                return float(value)
+            else:
+                raise SchemaValidationError(
+                    f"Expected {self.primitive_type}, got {value}"
+                )
+        return value
+
 
 @frozen
 class SequenceNode(SchemaNode):
@@ -119,6 +141,11 @@ class SequenceNode(SchemaNode):
             result["description"] = parent_hint
         return result
 
+    def eval(self, value: JSON) -> list[JSON]:
+        if not isinstance(value, list):
+            raise SchemaValidationError(f"Expected list, got {value}")
+        return [self.item_schema.eval(item) for item in value]
+
 
 @frozen
 class TupleNode(SchemaNode):
@@ -133,8 +160,20 @@ class TupleNode(SchemaNode):
     item_schemas: list[SchemaNode]
 
     def json_schema(self, parent_hint: str | None = None) -> JsonSchema:
-        raise JsonSchemaGenerationError(
+        raise UndefinedSchemaError(
             "JSON schema cannot be generated for heterogeneous tuple types."
+        )
+
+    def eval(self, value: JSON) -> tuple:
+        if not isinstance(value, list):
+            raise SchemaValidationError(f"Expected list, got {value}")
+        if len(value) != len(self.item_schemas):
+            raise SchemaValidationError(
+                f"Expected tuple of length {len(self.item_schemas)}, got {len(value)}"
+            )
+        return tuple(
+            item_schema.eval(item)
+            for item_schema, item in zip(self.item_schemas, value)
         )
 
 
@@ -153,9 +192,12 @@ class MappingNode(SchemaNode):
     value_schema: SchemaNode
 
     def json_schema(self, parent_hint: str | None = None) -> JsonSchema:
-        raise JsonSchemaGenerationError(
+        raise UnsupportedSchemaError(
             "JSON schema cannot be generated for Mapping types."
         )
+
+    def eval(self, value: JSON) -> NoReturn:
+        raise UnsupportedSchemaError("Cannot evaluate Mapping schema.")
 
 
 @frozen
@@ -169,29 +211,50 @@ class UnionNode(SchemaNode):
 
     options: list[SchemaNode | None]
 
-    def json_schema(self, parent_hint: str | None = None) -> JsonSchema:
-        if all(
+    @property
+    def is_primitive(self) -> bool:
+        return all(
             option is None or isinstance(option, PrimitiveNode)
             for option in self.options
-        ):
-            type_names = {
-                type_to_jsonname[option.primitive_type]  # type: ignore
-                for option in self.options
-                if option is not None
-            }
-            if "number" in type_names and "integer" in type_names:
-                type_names.remove("integer")
-            type_names = list(type_names)
-            if len(type_names) == 1:
-                type_names = type_names[0]
-            result = LeafJsonSchema(
-                type=type_names,  # type: ignore
+        )
+
+    def json_schema(self, parent_hint: str | None = None) -> JsonSchema:
+        if not self.is_primitive:
+            raise UnsupportedSchemaError(
+                "JSON schema cannot be generated for non-trivial Union types."
             )
-            if parent_hint:
-                result["description"] = parent_hint
-            return result
-        raise JsonSchemaGenerationError(
-            "JSON schema cannot be generated for non-trivial Union types."
+        type_names = {
+            type_to_jsonname[option.primitive_type]  # type: ignore
+            for option in self.options
+            if option is not None
+        }
+        if "number" in type_names and "integer" in type_names:
+            type_names.remove("integer")
+        type_names = list(type_names)
+        if len(type_names) == 1:
+            type_names = type_names[0]
+        result = LeafJsonSchema(
+            type=type_names,  # type: ignore
+        )
+        if parent_hint:
+            result["description"] = parent_hint
+        return result
+
+    def eval(self, value: JSON) -> JSON:
+        if not self.is_primitive:
+            raise UnsupportedSchemaError("Cannot evaluate non-primitive Union schema.")
+        for option in self.options:
+            if option is None:
+                if value is None:
+                    return None
+                else:
+                    continue
+            try:
+                return option.eval(value)
+            except SchemaValidationError:
+                continue
+        raise SchemaValidationError(
+            f"Value {value} does not match any of the options: {self.options}"
         )
 
 
@@ -207,13 +270,20 @@ class LiteralNode(SchemaNode):
 
     def json_schema(self, parent_hint: str | None = None) -> EnumJsonSchema:
         if not all(isinstance(option, str) for option in self.options):
-            raise JsonSchemaGenerationError(
+            raise UnsupportedSchemaError(
                 "JSON schema can only be generated for string literal types."
             )
         result = EnumJsonSchema(type="string", enum=self.options)  # type: ignore
         if parent_hint:
             result["description"] = parent_hint
         return result
+
+    def eval(self, value: JSON) -> int | float | str | bool:
+        if value not in self.options:
+            raise SchemaValidationError(
+                f"Value {value} does not match any of the options: {self.options}"
+            )
+        return value
 
 
 @frozen
@@ -243,12 +313,16 @@ class ObjectNode(SchemaNode):
     Represents the signature of the constructor.
 
     Attributes:
+        constructor_fn: Callable that can be used to construct an object.
+        constructor_signature: Signature of the constructor. Used to properly dispatch
+            positional and keyword-only args during evaluation.
         name: Name of the object.
         fields: The fields of the object.
         hint: Hint extracted from the docstring.
     """
 
     constructor_fn: Callable
+    constructor_signature: Signature
     name: str
     fields: list[ObjectField]
     hint: str | None
@@ -269,6 +343,31 @@ class ObjectNode(SchemaNode):
             result["description"] = joint_hint
         return result
 
+    def eval(self, value: JSON):
+        if not isinstance(value, dict):
+            raise SchemaValidationError(f"Expected object, got {value}")
+        args = []
+        kwargs = {}
+        pos_only_args = {
+            param.name
+            for param in self.constructor_signature.parameters.values()
+            if param.kind == param.POSITIONAL_ONLY
+        }
+        possible_args = {field.name for field in self.fields}
+        missing_args = {field.name for field in self.fields if field.required}
+        for arg_name, arg_value in value.items():
+            if arg_name not in possible_args:
+                raise SchemaValidationError(f"Unexpected field: {arg_name}")
+            if arg_name in pos_only_args:
+                args.append(arg_value)
+            else:
+                kwargs[arg_name] = arg_value
+            if arg_name in missing_args:
+                missing_args.remove(arg_name)
+        if missing_args:
+            raise SchemaValidationError(f"Missing required fields: {missing_args}")
+        return self.constructor_fn(*args, **kwargs)
+
 
 @frozen
 class CallableSchema:
@@ -288,22 +387,30 @@ class CallableSchema:
     long_description: str | None
 
     def json_schema(
-        self, flavour: JsonSchemaFlavour, include_long_description: bool = False
+        self, flavor: JsonSchemaFlavor, include_long_description: bool = False
     ) -> CallableJsonSchema:
+        r"""Extract JSON Schema to use with the LLM function call APIs.
+
+        Args:
+            flavor: Flavor of the JSON Schema syntax accepted by the target API.
+            include_long_description: Whether to include `long_description` to the
+                `description` field of the resulting JSON Schema.
+                Should be set to True for tools, and to False for object constructions.
+        """
         full_description = []
         if self.call_schema.hint:
             full_description.append(self.call_schema.hint)
         if self.long_description and include_long_description:
             full_description.append(self.long_description)
         full_description = "\n\n".join(full_description)
-        if flavour is JsonSchemaFlavour.ANTHROPIC:
+        if flavor is JsonSchemaFlavor.ANTHROPIC:
             result = AnthropicCallableSchema(
                 name=self.call_schema.name,
                 input_schema=evolve(self.call_schema, hint=None).json_schema(),
             )
             if full_description:
                 result["description"] = full_description
-        elif flavour is JsonSchemaFlavour.OPENAI:
+        elif flavor is JsonSchemaFlavor.OPENAI:
             result = OpenAICallableSchema(
                 name=self.call_schema.name,
                 parameters=evolve(self.call_schema, hint=None).json_schema(),
@@ -311,5 +418,9 @@ class CallableSchema:
             if full_description:
                 result["description"] = full_description
         else:
-            raise ValueError(f"Unknown JSON schema flavour: {flavour}")
+            raise ValueError(f"Unknown JSON schema flavour: {flavor}")
         return result
+
+    def eval(self, value: JSON):
+        r"""Call the callable with the given JSON value."""
+        return self.call_schema.eval(value)
