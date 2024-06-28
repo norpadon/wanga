@@ -180,9 +180,7 @@
 <div class="viewcode-block" id="UndefinedNode.json_schema">
 <a class="viewcode-back" href="../../../api.html#wanga.schema.schema.UndefinedNode.json_schema">[docs]</a>
     <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LeafJsonSchema</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span>
-            <span class="s2">&quot;JSON schema cannot be generated for missing or undefined annotations.&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span><span class="s2">&quot;JSON schema cannot be generated for missing or undefined annotations.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UndefinedNode.eval">
@@ -225,9 +223,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">primitive_type</span> <span class="ow">is</span> <span class="nb">float</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
                 <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">SchemaValidationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">primitive_type</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">SchemaValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">primitive_type</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span></div>
 </div>
 
@@ -284,9 +280,7 @@
 <div class="viewcode-block" id="TupleNode.json_schema">
 <a class="viewcode-back" href="../../../api.html#wanga.schema.schema.TupleNode.json_schema">[docs]</a>
     <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span>
-            <span class="s2">&quot;JSON schema cannot be generated for heterogeneous tuple types.&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span><span class="s2">&quot;JSON schema cannot be generated for heterogeneous tuple types.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TupleNode.eval">
@@ -295,13 +289,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">SchemaValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected list, got </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item_schemas</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">SchemaValidationError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Expected tuple of length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item_schemas</span><span class="p">)</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="n">item_schema</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">item_schema</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item_schemas</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="p">)</span></div>
+            <span class="k">raise</span> <span class="n">SchemaValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected tuple of length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item_schemas</span><span class="p">)</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">item_schema</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item_schema</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item_schemas</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span></div>
 </div>
 
 
@@ -325,9 +314,7 @@
 <div class="viewcode-block" id="MappingNode.json_schema">
 <a class="viewcode-back" href="../../../api.html#wanga.schema.schema.MappingNode.json_schema">[docs]</a>
     <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span>
-            <span class="s2">&quot;JSON schema cannot be generated for Mapping types.&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span><span class="s2">&quot;JSON schema cannot be generated for Mapping types.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MappingNode.eval">
@@ -353,18 +340,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_primitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span>
-            <span class="n">option</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">PrimitiveNode</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">option</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">PrimitiveNode</span><span class="p">)</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
 
 <div class="viewcode-block" id="UnionNode.json_schema">
 <a class="viewcode-back" href="../../../api.html#wanga.schema.schema.UnionNode.json_schema">[docs]</a>
     <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_primitive</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span>
-                <span class="s2">&quot;JSON schema cannot be generated for non-trivial Union types.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span><span class="s2">&quot;JSON schema cannot be generated for non-trivial Union types.&quot;</span><span class="p">)</span>
         <span class="n">type_names</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">_type_to_jsonname</span><span class="p">[</span><span class="n">option</span><span class="o">.</span><span class="n">primitive_type</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
             <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
@@ -397,9 +379,7 @@
                 <span class="k">return</span> <span class="n">option</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">SchemaValidationError</span><span class="p">:</span>
                 <span class="k">continue</span>
-        <span class="k">raise</span> <span class="n">SchemaValidationError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> does not match any of the options: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">raise</span> <span class="n">SchemaValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> does not match any of the options: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 </div>
 
 
@@ -416,9 +396,7 @@
 
     <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnumJsonSchema</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span>
-                <span class="s2">&quot;JSON schema can only be generated for string literal types.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span><span class="s2">&quot;JSON schema can only be generated for string literal types.&quot;</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">EnumJsonSchema</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="k">if</span> <span class="n">parent_hint</span><span class="p">:</span>
             <span class="n">result</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent_hint</span>
@@ -426,9 +404,7 @@
 
     <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">JSON</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">SchemaValidationError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> does not match any of the options: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">SchemaValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> does not match any of the options: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
 
 
@@ -548,9 +524,7 @@
 
 <div class="viewcode-block" id="CallableSchema.json_schema">
 <a class="viewcode-back" href="../../../api.html#wanga.schema.schema.CallableSchema.json_schema">[docs]</a>
-    <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">flavor</span><span class="p">:</span> <span class="n">JsonSchemaFlavor</span><span class="p">,</span> <span class="n">include_long_description</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CallableJsonSchema</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flavor</span><span class="p">:</span> <span class="n">JsonSchemaFlavor</span><span class="p">,</span> <span class="n">include_long_description</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CallableJsonSchema</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract JSON Schema to use with the LLM function call APIs.</span>
 
 <span class="sd">        Args:</span>
