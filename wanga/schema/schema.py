@@ -27,22 +27,24 @@ __all__ = [
     "ObjectNode",
     "PrimitiveNode",
     "SchemaNode",
+    "SchemaValidationError",
     "SequenceNode",
     "TupleNode",
     "UndefinedNode",
     "UnionNode",
+    "UnsupportedSchemaError",
 ]
 
 
 JSON: TypeAlias = int | float | str | bool | None | dict[str, "JSON"] | list["JSON"]
 
 
-type_to_jsonname: dict[type | None, LeafTypeName] = {
-    int: "integer",
-    float: "number",
-    str: "string",
-    bool: "boolean",
+_type_to_jsonname: dict[type | None, LeafTypeName] = {
     None: "null",
+    bool: "boolean",
+    float: "number",
+    int: "integer",
+    str: "string",
 }
 
 
@@ -105,7 +107,7 @@ class PrimitiveNode(SchemaNode):
 
     def json_schema(self, parent_hint: str | None = None) -> LeafJsonSchema:
         result = LeafJsonSchema(
-            type=type_to_jsonname[self.primitive_type],
+            type=_type_to_jsonname[self.primitive_type],
         )
         if parent_hint:
             result["description"] = parent_hint
@@ -160,7 +162,7 @@ class TupleNode(SchemaNode):
     item_schemas: list[SchemaNode]
 
     def json_schema(self, parent_hint: str | None = None) -> JsonSchema:
-        raise UndefinedSchemaError(
+        raise UnsupportedSchemaError(
             "JSON schema cannot be generated for heterogeneous tuple types."
         )
 
@@ -223,14 +225,13 @@ class UnionNode(SchemaNode):
             raise UnsupportedSchemaError(
                 "JSON schema cannot be generated for non-trivial Union types."
             )
-        type_names = {
-            type_to_jsonname[option.primitive_type]  # type: ignore
+        type_names = [
+            _type_to_jsonname[option.primitive_type]  # type: ignore
             for option in self.options
             if option is not None
-        }
+        ]
         if "number" in type_names and "integer" in type_names:
             type_names.remove("integer")
-        type_names = list(type_names)
         if len(type_names) == 1:
             type_names = type_names[0]
         result = LeafJsonSchema(
@@ -314,8 +315,8 @@ class ObjectNode(SchemaNode):
 
     Attributes:
         constructor_fn: Callable that can be used to construct an object.
-        constructor_signature: Signature of the constructor. Used to properly dispatch
-            positional and keyword-only args during evaluation.
+        constructor_signature: Used to properly dispatch positional and
+            keyword-only args during evaluation.
         name: Name of the object.
         fields: The fields of the object.
         hint: Hint extracted from the docstring.

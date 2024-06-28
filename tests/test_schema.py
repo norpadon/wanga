@@ -420,7 +420,7 @@ def test_json_schema():
                     "enum": ["x", "y"],
                 },
                 "f": {
-                    "type": ["integer", "string"],
+                    "type": ["string", "integer"],
                 },
             },
             "required": ["a", "b", "c"],
