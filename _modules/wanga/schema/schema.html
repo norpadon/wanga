@@ -103,31 +103,39 @@
     <span class="s2">&quot;ObjectNode&quot;</span><span class="p">,</span>
     <span class="s2">&quot;PrimitiveNode&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SchemaNode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SchemaValidationError&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SequenceNode&quot;</span><span class="p">,</span>
     <span class="s2">&quot;TupleNode&quot;</span><span class="p">,</span>
     <span class="s2">&quot;UndefinedNode&quot;</span><span class="p">,</span>
     <span class="s2">&quot;UnionNode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UnsupportedSchemaError&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <span class="n">JSON</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;JSON&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;JSON&quot;</span><span class="p">]</span>
 
 
-<span class="n">type_to_jsonname</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">LeafTypeName</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="nb">int</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
-    <span class="nb">float</span><span class="p">:</span> <span class="s2">&quot;number&quot;</span><span class="p">,</span>
-    <span class="nb">str</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
-    <span class="nb">bool</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+<span class="n">_type_to_jsonname</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">LeafTypeName</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="kc">None</span><span class="p">:</span> <span class="s2">&quot;null&quot;</span><span class="p">,</span>
+    <span class="nb">bool</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+    <span class="nb">float</span><span class="p">:</span> <span class="s2">&quot;number&quot;</span><span class="p">,</span>
+    <span class="nb">int</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="nb">str</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 
+<div class="viewcode-block" id="UnsupportedSchemaError">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.UnsupportedSchemaError">[docs]</a>
 <span class="k">class</span> <span class="nc">UnsupportedSchemaError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-    <span class="k">pass</span>
+    <span class="k">pass</span></div>
 
 
+
+<div class="viewcode-block" id="SchemaValidationError">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.schema.SchemaValidationError">[docs]</a>
 <span class="k">class</span> <span class="nc">SchemaValidationError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-    <span class="k">pass</span>
+    <span class="k">pass</span></div>
+
 
 
 <div class="viewcode-block" id="SchemaNode">
@@ -203,7 +211,7 @@
 <a class="viewcode-back" href="../../../api.html#wanga.schema.schema.PrimitiveNode.json_schema">[docs]</a>
     <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LeafJsonSchema</span><span class="p">:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">LeafJsonSchema</span><span class="p">(</span>
-            <span class="nb">type</span><span class="o">=</span><span class="n">type_to_jsonname</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">primitive_type</span><span class="p">],</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">_type_to_jsonname</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">primitive_type</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">parent_hint</span><span class="p">:</span>
             <span class="n">result</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent_hint</span>
@@ -276,7 +284,7 @@
 <div class="viewcode-block" id="TupleNode.json_schema">
 <a class="viewcode-back" href="../../../api.html#wanga.schema.schema.TupleNode.json_schema">[docs]</a>
     <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">UndefinedSchemaError</span><span class="p">(</span>
+        <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span>
             <span class="s2">&quot;JSON schema cannot be generated for heterogeneous tuple types.&quot;</span>
         <span class="p">)</span></div>
 
@@ -357,14 +365,13 @@
             <span class="k">raise</span> <span class="n">UnsupportedSchemaError</span><span class="p">(</span>
                 <span class="s2">&quot;JSON schema cannot be generated for non-trivial Union types.&quot;</span>
             <span class="p">)</span>
-        <span class="n">type_names</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">type_to_jsonname</span><span class="p">[</span><span class="n">option</span><span class="o">.</span><span class="n">primitive_type</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="n">type_names</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_type_to_jsonname</span><span class="p">[</span><span class="n">option</span><span class="o">.</span><span class="n">primitive_type</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
             <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span>
             <span class="k">if</span> <span class="n">option</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="p">}</span>
+        <span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;number&quot;</span> <span class="ow">in</span> <span class="n">type_names</span> <span class="ow">and</span> <span class="s2">&quot;integer&quot;</span> <span class="ow">in</span> <span class="n">type_names</span><span class="p">:</span>
             <span class="n">type_names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">)</span>
-        <span class="n">type_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">type_names</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">type_names</span> <span class="o">=</span> <span class="n">type_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">LeafJsonSchema</span><span class="p">(</span>
@@ -458,8 +465,8 @@
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        constructor_fn: Callable that can be used to construct an object.</span>
-<span class="sd">        constructor_signature: Signature of the constructor. Used to properly dispatch</span>
-<span class="sd">            positional and keyword-only args during evaluation.</span>
+<span class="sd">        constructor_signature: Used to properly dispatch positional and</span>
+<span class="sd">            keyword-only args during evaluation.</span>
 <span class="sd">        name: Name of the object.</span>
 <span class="sd">        fields: The fields of the object.</span>
 <span class="sd">        hint: Hint extracted from the docstring.</span>

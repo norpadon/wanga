@@ -57,10 +57,12 @@
 <li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.ObjectNode"><code class="docutils literal notranslate"><span class="pre">ObjectNode</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.PrimitiveNode"><code class="docutils literal notranslate"><span class="pre">PrimitiveNode</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.SchemaNode"><code class="docutils literal notranslate"><span class="pre">SchemaNode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.SchemaValidationError"><code class="docutils literal notranslate"><span class="pre">SchemaValidationError</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.SequenceNode"><code class="docutils literal notranslate"><span class="pre">SequenceNode</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.TupleNode"><code class="docutils literal notranslate"><span class="pre">TupleNode</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.UndefinedNode"><code class="docutils literal notranslate"><span class="pre">UndefinedNode</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.UnionNode"><code class="docutils literal notranslate"><span class="pre">UnionNode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.UnsupportedSchemaError"><code class="docutils literal notranslate"><span class="pre">UnsupportedSchemaError</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#schema-extraction">Schema Extraction</a></li>
@@ -255,8 +257,8 @@ Should be set to True for tools, and to False for object constructions.</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode.constructor_signature">
 <span class="sig-name descname"><span class="pre">constructor_signature</span></span><a class="headerlink" href="#wanga.schema.schema.ObjectNode.constructor_signature" title="Link to this definition"></a></dt>
-<dd><p>Signature of the constructor. Used to properly dispatch
-positional and keyword-only args during evaluation.</p>
+<dd><p>Used to properly dispatch positional and
+keyword-only args during evaluation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>inspect.Signature</p>
@@ -373,6 +375,11 @@ positional and keyword-only args during evaluation.</p>
 </dd></dl>
 
 </dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="wanga.schema.schema.SchemaValidationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaValidationError</span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SchemaValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SchemaValidationError" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="wanga.schema.schema.SequenceNode">
@@ -531,6 +538,11 @@ May be None in case of optional types.</p>
 </dd></dl>
 
 </dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="wanga.schema.schema.UnsupportedSchemaError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">UnsupportedSchemaError</span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#UnsupportedSchemaError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.UnsupportedSchemaError" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="schema-extraction">
