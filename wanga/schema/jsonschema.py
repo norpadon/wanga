@@ -44,9 +44,7 @@ class ArrayJsonSchema(TypedDict, total=False):
     description: str
 
 
-JsonSchema: TypeAlias = (
-    LeafJsonSchema | EnumJsonSchema | ObjectJsonSchema | ArrayJsonSchema
-)
+JsonSchema: TypeAlias = LeafJsonSchema | EnumJsonSchema | ObjectJsonSchema | ArrayJsonSchema
 
 
 class AnthropicCallableSchema(TypedDict, total=False):

@@ -11,8 +11,4 @@ TypeAnnotation: TypeAlias = Any
 
 
 def strip_self(signature: Signature) -> Signature:
-    return signature.replace(
-        parameters=[
-            param for name, param in signature.parameters.items() if name != "self"
-        ]
-    )
+    return signature.replace(parameters=[param for name, param in signature.parameters.items() if name != "self"])

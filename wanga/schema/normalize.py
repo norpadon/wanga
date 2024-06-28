@@ -91,17 +91,13 @@ ABSTRACT_TO_CONCRETE = {
 }
 
 
-def _normalize_annotation_rec(
-    annotation: TypeAnnotation, concretize: bool = False
-) -> TypeAnnotation:
+def _normalize_annotation_rec(annotation: TypeAnnotation, concretize: bool = False) -> TypeAnnotation:
     origin = get_origin(annotation)
     args = get_args(annotation)
     if origin is None:
         return annotation
     if args:
-        args = tuple(
-            _normalize_annotation_rec(arg, concretize=concretize) for arg in args
-        )
+        args = tuple(_normalize_annotation_rec(arg, concretize=concretize) for arg in args)
     if origin is Annotated:
         return args[0]
     if origin in [Union, UnionType]:
@@ -113,9 +109,7 @@ def _normalize_annotation_rec(
     return origin
 
 
-def normalize_annotation(
-    annotation: TypeAnnotation, concretize: bool = False
-) -> TypeAnnotation:
+def normalize_annotation(annotation: TypeAnnotation, concretize: bool = False) -> TypeAnnotation:
     r"""Normalize a type annotation to a standard form.
 
     Strips `Annotated` tags and replaces generic aliases with corresponding generic types.

@@ -71,11 +71,7 @@ class SchemaExtractor:
             docstring = parse_docstring(docstring)
             object_hint = docstring.short_description
             long_description = docstring.long_description
-            param_to_hint = {
-                param.arg_name: param.description
-                for param in docstring.params
-                if param.description
-            }
+            param_to_hint = {param.arg_name: param.description for param in docstring.params if param.description}
         else:
             object_hint = None
             long_description = None
@@ -129,9 +125,7 @@ class SchemaExtractor:
         # Normalization step has already converted all abstract classes to the corresponding concrete types.
         # So we can safely check against list and dict.
         if issubclass(origin, list):
-            assert (
-                len(args) == 1
-            ), "Sequence type annotation should have exactly one argument."
+            assert len(args) == 1, "Sequence type annotation should have exactly one argument."
             return SequenceNode(
                 sequence_type=origin,
                 item_schema=self.annotation_to_schema(args[0]),
@@ -147,9 +141,7 @@ class SchemaExtractor:
                 item_schemas=[self.annotation_to_schema(arg) for arg in args],
             )
         if issubclass(origin, dict):
-            assert (
-                len(args) == 2
-            ), "Mapping type annotation should have exactly two arguments."
+            assert len(args) == 2, "Mapping type annotation should have exactly two arguments."
             return MappingNode(
                 mapping_type=origin,
                 key_schema=self.annotation_to_schema(args[0]),
@@ -163,9 +155,7 @@ class SchemaExtractor:
         try:
             return self._extract_schema_impl(callable)
         except Exception as e:
-            raise SchemaExtractionError(
-                f"Failed to extract schema for {callable}"
-            ) from e
+            raise SchemaExtractionError(f"Failed to extract schema for {callable}") from e
 
     def _extract_schema_impl(self, callable: Callable) -> CallableSchema:
         for fn in self.exctractor_fns:

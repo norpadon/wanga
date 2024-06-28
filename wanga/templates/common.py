@@ -11,9 +11,7 @@ BUILTIN_FUNCTIONS = {zip, enumerate, range}
 
 
 ENVIROMENT = jinja2.Environment(autoescape=False, undefined=jinja2.StrictUndefined)
-ENVIROMENT.globals.update(
-    {function.__name__: function for function in BUILTIN_FUNCTIONS}
-)
+ENVIROMENT.globals.update({function.__name__: function for function in BUILTIN_FUNCTIONS})
 
 
 def make_template(template_string: str) -> jinja2.Template:

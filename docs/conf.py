@@ -27,9 +27,7 @@ def read_poetry_config(filename: Path | str) -> PoetryConfig:
     filename = Path(filename)
     with open(filename, "r") as file:
         config = toml.load(file)["tool"]["poetry"]
-    return PoetryConfig(
-        project=config["name"], version=config["version"], author=config["authors"][0]
-    )
+    return PoetryConfig(project=config["name"], version=config["version"], author=config["authors"][0])
 
 
 poetry_config = read_poetry_config(project_root / "pyproject.toml")

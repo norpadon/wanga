@@ -28,9 +28,16 @@ sphinx-rtd-theme = "^2.0.0"
 sphinxcontrib-napoleon = "^0.7"
 toml = "^0.10.2"
 
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+
 [tool.pyright]
 pythonVersion = "3.10"
 typeCheckingMode = "standard"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
 
 [build-system]
 requires = ["poetry-core"]

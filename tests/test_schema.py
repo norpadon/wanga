@@ -34,13 +34,8 @@ def test_normalize_schema():
         typing.Optional[int]: int | None,
         typing.List: list,
         typing.Union[typing.Union[int, float], str]: int | float | str,
-        (typing.Literal[1] | typing.Literal[2] | typing.Literal[3]): typing.Literal[
-            1, 2, 3
-        ],
-        (
-            typing.Literal[1, 2]
-            | typing.Union[typing.Literal[2, 3], typing.Literal[3, 4]]
-        ): (typing.Literal[1, 2, 3, 4]),
+        (typing.Literal[1] | typing.Literal[2] | typing.Literal[3]): typing.Literal[1, 2, 3],
+        (typing.Literal[1, 2] | typing.Union[typing.Literal[2, 3], typing.Literal[3, 4]]): (typing.Literal[1, 2, 3, 4]),
     }
     for annotation, result in expected.items():
         assert normalize_annotation(annotation) == result
@@ -255,9 +250,7 @@ def test_extract_schema():
                     name="date",
                     schema=ObjectNode(
                         constructor_fn=datetime,
-                        constructor_signature=strip_self(
-                            inspect.signature(datetime.__init__)
-                        ),
+                        constructor_signature=strip_self(inspect.signature(datetime.__init__)),
                         name="datetime",
                         hint=None,
                         fields=[
@@ -335,9 +328,7 @@ def test_extract_schema():
                     name="delta",
                     schema=ObjectNode(
                         constructor_fn=timedelta,
-                        constructor_signature=strip_self(
-                            inspect.signature(timedelta.__init__)
-                        ),
+                        constructor_signature=strip_self(inspect.signature(timedelta.__init__)),
                         name="timedelta",
                         hint=None,
                         fields=[
@@ -428,9 +419,7 @@ def test_json_schema():
     }
 
     core_schema = default_schema_extractor.extract_schema(foo)
-    json_schema = core_schema.json_schema(
-        JsonSchemaFlavor.OPENAI, include_long_description=True
-    )
+    json_schema = core_schema.json_schema(JsonSchemaFlavor.OPENAI, include_long_description=True)
     assert json_schema == expected_json_schema
 
 

@@ -85,9 +85,7 @@ class UndefinedNode(SchemaNode):
     original_annotation: NoneType | TypeAnnotation
 
     def json_schema(self, parent_hint: str | None = None) -> LeafJsonSchema:
-        raise UnsupportedSchemaError(
-            "JSON schema cannot be generated for missing or undefined annotations."
-        )
+        raise UnsupportedSchemaError("JSON schema cannot be generated for missing or undefined annotations.")
 
     def eval(self, value: JSON) -> NoReturn:
         raise UnsupportedSchemaError("Cannot evaluate undefined schema.")
@@ -118,9 +116,7 @@ class PrimitiveNode(SchemaNode):
             if self.primitive_type is float and isinstance(value, int):
                 return float(value)
             else:
-                raise SchemaValidationError(
-                    f"Expected {self.primitive_type}, got {value}"
-                )
+                raise SchemaValidationError(f"Expected {self.primitive_type}, got {value}")
         return value
 
 
@@ -162,21 +158,14 @@ class TupleNode(SchemaNode):
     item_schemas: list[SchemaNode]
 
     def json_schema(self, parent_hint: str | None = None) -> JsonSchema:
-        raise UnsupportedSchemaError(
-            "JSON schema cannot be generated for heterogeneous tuple types."
-        )
+        raise UnsupportedSchemaError("JSON schema cannot be generated for heterogeneous tuple types.")
 
     def eval(self, value: JSON) -> tuple:
         if not isinstance(value, list):
             raise SchemaValidationError(f"Expected list, got {value}")
         if len(value) != len(self.item_schemas):
-            raise SchemaValidationError(
-                f"Expected tuple of length {len(self.item_schemas)}, got {len(value)}"
-            )
-        return tuple(
-            item_schema.eval(item)
-            for item_schema, item in zip(self.item_schemas, value)
-        )
+            raise SchemaValidationError(f"Expected tuple of length {len(self.item_schemas)}, got {len(value)}")
+        return tuple(item_schema.eval(item) for item_schema, item in zip(self.item_schemas, value))
 
 
 @frozen
@@ -194,9 +183,7 @@ class MappingNode(SchemaNode):
     value_schema: SchemaNode
 
     def json_schema(self, parent_hint: str | None = None) -> JsonSchema:
-        raise UnsupportedSchemaError(
-            "JSON schema cannot be generated for Mapping types."
-        )
+        raise UnsupportedSchemaError("JSON schema cannot be generated for Mapping types.")
 
     def eval(self, value: JSON) -> NoReturn:
         raise UnsupportedSchemaError("Cannot evaluate Mapping schema.")
@@ -215,16 +202,11 @@ class UnionNode(SchemaNode):
 
     @property
     def is_primitive(self) -> bool:
-        return all(
-            option is None or isinstance(option, PrimitiveNode)
-            for option in self.options
-        )
+        return all(option is None or isinstance(option, PrimitiveNode) for option in self.options)
 
     def json_schema(self, parent_hint: str | None = None) -> JsonSchema:
         if not self.is_primitive:
-            raise UnsupportedSchemaError(
-                "JSON schema cannot be generated for non-trivial Union types."
-            )
+            raise UnsupportedSchemaError("JSON schema cannot be generated for non-trivial Union types.")
         type_names = [
             _type_to_jsonname[option.primitive_type]  # type: ignore
             for option in self.options
@@ -254,9 +236,7 @@ class UnionNode(SchemaNode):
                 return option.eval(value)
             except SchemaValidationError:
                 continue
-        raise SchemaValidationError(
-            f"Value {value} does not match any of the options: {self.options}"
-        )
+        raise SchemaValidationError(f"Value {value} does not match any of the options: {self.options}")
 
 
 @frozen
@@ -271,9 +251,7 @@ class LiteralNode(SchemaNode):
 
     def json_schema(self, parent_hint: str | None = None) -> EnumJsonSchema:
         if not all(isinstance(option, str) for option in self.options):
-            raise UnsupportedSchemaError(
-                "JSON schema can only be generated for string literal types."
-            )
+            raise UnsupportedSchemaError("JSON schema can only be generated for string literal types.")
         result = EnumJsonSchema(type="string", enum=self.options)  # type: ignore
         if parent_hint:
             result["description"] = parent_hint
@@ -281,9 +259,7 @@ class LiteralNode(SchemaNode):
 
     def eval(self, value: JSON) -> int | float | str | bool:
         if value not in self.options:
-            raise SchemaValidationError(
-                f"Value {value} does not match any of the options: {self.options}"
-            )
+            raise SchemaValidationError(f"Value {value} does not match any of the options: {self.options}")
         return value
 
 
@@ -387,9 +363,7 @@ class CallableSchema:
     return_schema: SchemaNode
     long_description: str | None
 
-    def json_schema(
-        self, flavor: JsonSchemaFlavor, include_long_description: bool = False
-    ) -> CallableJsonSchema:
+    def json_schema(self, flavor: JsonSchemaFlavor, include_long_description: bool = False) -> CallableJsonSchema:
         r"""Extract JSON Schema to use with the LLM function call APIs.
 
         Args:
