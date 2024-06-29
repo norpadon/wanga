@@ -197,14 +197,14 @@ def test_extract_schema():
             baz: The baz.
         """
 
-        x: int
+        x: "int"
         baz: Baz
 
     qux_schema = CallableSchema(
         return_schema=UndefinedNode(original_annotation=None),
         call_schema=ObjectNode(
             constructor_fn=Qux,
-            constructor_signature=inspect.signature(Qux),
+            constructor_signature=inspect.signature(Qux, eval_str=True),
             name="Qux",
             hint="I am Qux.",
             fields=[
