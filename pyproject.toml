@@ -42,7 +42,7 @@ sphinxcontrib-napoleon = "^0.7"
 toml = "^0.10.2"
 
 [tool.pytest.ini_options]
-addopts = "--doctest-modules"
+addopts = "--doctest-modules -vv --showlocals"
 
 [tool.pyright]
 pythonVersion = "3.10"
