@@ -1739,4 +1739,4 @@ openai = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.10,<4.0"
-content-hash = "e07ee9314b04daade7fd4a95ed1e91f2196ebaf9d838eca2306f91c23cf8ba09"
+content-hash = "d2efcb0043765a4274f4fd122fb22f4f05d1ff2c7055ce204bf816b88a53ca54"
