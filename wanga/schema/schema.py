@@ -1,10 +1,11 @@
 from collections.abc import Mapping, Sequence
 from inspect import Signature
 from types import NoneType
-from typing import Callable, NoReturn, TypeAlias
+from typing import Callable, NoReturn
 
 from attrs import evolve, frozen
 
+from ..common import JSON
 from .jsonschema import (
     AnthropicCallableSchema,
     ArrayJsonSchema,
@@ -34,10 +35,6 @@ __all__ = [
     "UnionNode",
     "UnsupportedSchemaError",
 ]
-
-
-JSON: TypeAlias = int | float | str | bool | None | dict[str, "JSON"] | list["JSON"]
-
 
 _type_to_jsonname: dict[type | None, LeafTypeName] = {
     None: "null",

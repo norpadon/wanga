@@ -35,7 +35,9 @@ def test_normalize_schema():
         typing.List: list,
         typing.Union[typing.Union[int, float], str]: int | float | str,
         (typing.Literal[1] | typing.Literal[2] | typing.Literal[3]): typing.Literal[1, 2, 3],
-        (typing.Literal[1, 2] | typing.Union[typing.Literal[2, 3], typing.Literal[3, 4]]): (typing.Literal[1, 2, 3, 4]),
+        (typing.Literal[1, 2] | typing.Union[typing.Literal[2, 3], typing.Literal[3, 4]]): (
+            typing.Literal[1, 2, 3, 4]
+        ),
     }
     for annotation, result in expected.items():
         assert normalize_annotation(annotation) == result

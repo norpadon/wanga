@@ -14,7 +14,7 @@ from wanga.models.messages import (
 def test_consistency():
     messages = [
         SystemMessage(content="Be a helpful assistant!\n"),
-        UserMessage(name="Alice", content=["Hello, world!"]),
+        UserMessage(name="Alice", content="Hello, world!"),
         AssistantMessage(
             name="Bob",
             content="Here's a helpful image!",
@@ -33,7 +33,7 @@ def test_consistency():
                 ImageContent(url="https://example.com/image.png"),
             ],
         ),
-        UserMessage(name="Alice", content=["Thanks for the image!"]),
+        UserMessage(name="Alice", content="Thanks for the image!"),
     ]
 
     chat_str = "\n".join(str(message) for message in messages)
@@ -54,3 +54,20 @@ def test_consistency():
 
     parsed_messages = parse_messages(chat_str)
     assert "\n".join(str(message) for message in parsed_messages) == chat_str.strip()
+
+
+def test_num_blocks():
+    chat_str = r"""
+    [|system|]
+    You are a helpful assistant.
+    [|user|]
+    2 + 2 = ?
+    """
+    chat_str = dedent(chat_str.removeprefix("\n"))
+    parsed_messages = parse_messages(chat_str)
+    system_message = parsed_messages[0]
+    user_message = parsed_messages[1]
+    assert isinstance(system_message, SystemMessage)
+    assert isinstance(system_message.content, str)
+    assert isinstance(user_message, UserMessage)
+    assert isinstance(user_message.content, str)

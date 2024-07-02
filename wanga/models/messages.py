@@ -228,6 +228,8 @@ def _parse_message(header: ParsedHeader, message_str: str) -> Message:
             return SystemMessage(name=header.params.get("name"), content=message_str)
         case "user":
             content = list(_map_headers_to_content(message_blocks))
+            if len(content) == 1 and isinstance(content[0], str):
+                content = content[0]
             return UserMessage(name=header.params.get("name"), content=content)
         case "assistant":
             if not message_blocks:

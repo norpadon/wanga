@@ -60,12 +60,30 @@ class ModelResponse:
     usage: UsageStats
 
 
+class AuthenticationError(Exception):
+    r"""Raised when the API credentials are invalid."""
+
+
 class PromptTooLongError(ValueError):
-    pass
+    r"""Raised when the total length of prompt and requested response exceeds the maximum allowed number of tokens,
+    or the size of requested completion exceeds the maximum response size.
+    """
 
 
 class ModelTimeoutError(TimeoutError):
-    pass
+    r"""Raised when the model takes too long to generate a response."""
+
+
+class InvalidJsonError(RuntimeError):
+    r"""Raised when the model returns a malformed JSON as a response to a function call."""
+
+
+class RateLimitError(Exception):
+    r"""Raised when the request limit is exceeded."""
+
+
+class ServiceUnvailableError(RuntimeError):
+    r"""Raised when the API is down."""
 
 
 class Model:
@@ -75,6 +93,7 @@ class Model:
         tools: ToolParams = ToolParams(),
         params: GenerationParams = GenerationParams(),
         num_options: int = 1,
+        user_id: str | None = None,
     ) -> ModelResponse:
         raise NotImplementedError
 
@@ -84,6 +103,7 @@ class Model:
         tools: ToolParams = ToolParams(),
         params: GenerationParams = GenerationParams(),
         num_options: int = 1,
+        user_id: str | None = None,
     ) -> ModelResponse:
         raise NotImplementedError
 
