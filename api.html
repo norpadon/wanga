@@ -49,23 +49,34 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#schema-extraction-and-manipulation">Schema extraction and manipulation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#module-wanga.schema.schema">Schema Definition</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.CallableSchema"><code class="docutils literal notranslate"><span class="pre">CallableSchema</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.MappingNode"><code class="docutils literal notranslate"><span class="pre">MappingNode</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.ObjectField"><code class="docutils literal notranslate"><span class="pre">ObjectField</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.ObjectNode"><code class="docutils literal notranslate"><span class="pre">ObjectNode</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.PrimitiveNode"><code class="docutils literal notranslate"><span class="pre">PrimitiveNode</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.SchemaNode"><code class="docutils literal notranslate"><span class="pre">SchemaNode</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.SchemaValidationError"><code class="docutils literal notranslate"><span class="pre">SchemaValidationError</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.SequenceNode"><code class="docutils literal notranslate"><span class="pre">SequenceNode</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.TupleNode"><code class="docutils literal notranslate"><span class="pre">TupleNode</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.UndefinedNode"><code class="docutils literal notranslate"><span class="pre">UndefinedNode</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.UnionNode"><code class="docutils literal notranslate"><span class="pre">UnionNode</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.schema.UnsupportedSchemaError"><code class="docutils literal notranslate"><span class="pre">UnsupportedSchemaError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#llm-api">LLM API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-wanga.models.messages">Messages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.messages.ImageContent"><code class="docutils literal notranslate"><span class="pre">ImageContent</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#schema-extraction">Schema Extraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-wanga.models.model">Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.AuthenticationError"><code class="docutils literal notranslate"><span class="pre">AuthenticationError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.FinishReason"><code class="docutils literal notranslate"><span class="pre">FinishReason</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.InvalidJsonError"><code class="docutils literal notranslate"><span class="pre">InvalidJsonError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.ModelTimeoutError"><code class="docutils literal notranslate"><span class="pre">ModelTimeoutError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.PromptTooLongError"><code class="docutils literal notranslate"><span class="pre">PromptTooLongError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.RateLimitError"><code class="docutils literal notranslate"><span class="pre">RateLimitError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.ServiceUnvailableError"><code class="docutils literal notranslate"><span class="pre">ServiceUnvailableError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.ToolUseMode"><code class="docutils literal notranslate"><span class="pre">ToolUseMode</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#schema-extraction-and-manipulation">Schema extraction and manipulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-wanga.schema">Schema Definition</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.CallableSchema"><code class="docutils literal notranslate"><span class="pre">CallableSchema</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.JsonSchemaFlavor"><code class="docutils literal notranslate"><span class="pre">JsonSchemaFlavor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-wanga.schema.extractor">Schema Extraction</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.extractor.SchemaExtractor"><code class="docutils literal notranslate"><span class="pre">SchemaExtractor</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -98,40 +109,104 @@
              
   <section id="module-wanga">
 <span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-wanga" title="Link to this heading"></a></h1>
+<section id="llm-api">
+<h2>LLM API<a class="headerlink" href="#llm-api" title="Link to this heading"></a></h2>
+<section id="module-wanga.models.messages">
+<span id="messages"></span><h3>Messages<a class="headerlink" href="#module-wanga.models.messages" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="wanga.models.messages.ImageContent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.messages.</span></span><span class="sig-name descname"><span class="pre">ImageContent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base64</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/models/messages.html#ImageContent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.messages.ImageContent" title="Link to this definition"></a></dt>
+<dd><p>Image embedded in a message. Can either be a URL, or a base64-encoded file.</p>
+</dd></dl>
+
+</section>
+<section id="module-wanga.models.model">
+<span id="models"></span><h3>Models<a class="headerlink" href="#module-wanga.models.model" title="Link to this heading"></a></h3>
+<dl class="py exception">
+<dt class="sig sig-object py" id="wanga.models.model.AuthenticationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">AuthenticationError</span></span><a class="reference internal" href="_modules/wanga/models/model.html#AuthenticationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.AuthenticationError" title="Link to this definition"></a></dt>
+<dd><p>Raised when the API credentials are invalid.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="wanga.models.model.FinishReason">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">FinishReason</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/models/model.html#FinishReason"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.FinishReason" title="Link to this definition"></a></dt>
+<dd><p>An enumeration.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="wanga.models.model.InvalidJsonError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">InvalidJsonError</span></span><a class="reference internal" href="_modules/wanga/models/model.html#InvalidJsonError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.InvalidJsonError" title="Link to this definition"></a></dt>
+<dd><p>Raised when the model returns a malformed JSON as a response to a function call.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="wanga.models.model.ModelTimeoutError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">ModelTimeoutError</span></span><a class="reference internal" href="_modules/wanga/models/model.html#ModelTimeoutError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.ModelTimeoutError" title="Link to this definition"></a></dt>
+<dd><p>Raised when the model takes too long to generate a response.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="wanga.models.model.PromptTooLongError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">PromptTooLongError</span></span><a class="reference internal" href="_modules/wanga/models/model.html#PromptTooLongError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.PromptTooLongError" title="Link to this definition"></a></dt>
+<dd><p>Raised when the total length of prompt and requested response exceeds the maximum allowed number of tokens,
+or the size of requested completion exceeds the maximum response size.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="wanga.models.model.RateLimitError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">RateLimitError</span></span><a class="reference internal" href="_modules/wanga/models/model.html#RateLimitError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.RateLimitError" title="Link to this definition"></a></dt>
+<dd><p>Raised when the request limit is exceeded.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="wanga.models.model.ServiceUnvailableError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">ServiceUnvailableError</span></span><a class="reference internal" href="_modules/wanga/models/model.html#ServiceUnvailableError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.ServiceUnvailableError" title="Link to this definition"></a></dt>
+<dd><p>Raised when the API is down.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="wanga.models.model.ToolUseMode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">ToolUseMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/models/model.html#ToolUseMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.ToolUseMode" title="Link to this definition"></a></dt>
+<dd><p>An enumeration.</p>
+</dd></dl>
+
+</section>
+</section>
 <section id="schema-extraction-and-manipulation">
 <h2>Schema extraction and manipulation<a class="headerlink" href="#schema-extraction-and-manipulation" title="Link to this heading"></a></h2>
-<section id="module-wanga.schema.schema">
-<span id="schema-definition"></span><h3>Schema Definition<a class="headerlink" href="#module-wanga.schema.schema" title="Link to this heading"></a></h3>
+<section id="module-wanga.schema">
+<span id="schema-definition"></span><h3>Schema Definition<a class="headerlink" href="#module-wanga.schema" title="Link to this heading"></a></h3>
 <dl class="py class">
-<dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">CallableSchema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.ObjectNode" title="wanga.schema.schema.ObjectNode"><span class="pre">ObjectNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">long_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#CallableSchema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.CallableSchema" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="wanga.schema.CallableSchema">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.</span></span><span class="sig-name descname"><span class="pre">CallableSchema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ObjectNode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SchemaNode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">long_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#CallableSchema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.CallableSchema" title="Link to this definition"></a></dt>
 <dd><p>Complete schema of a function or a class.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema.call_schema">
-<span class="sig-name descname"><span class="pre">call_schema</span></span><a class="headerlink" href="#wanga.schema.schema.CallableSchema.call_schema" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="wanga.schema.CallableSchema.call_schema">
+<span class="sig-name descname"><span class="pre">call_schema</span></span><a class="headerlink" href="#wanga.schema.CallableSchema.call_schema" title="Link to this definition"></a></dt>
 <dd><p>Schema of the function call.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#wanga.schema.schema.ObjectNode" title="wanga.schema.schema.ObjectNode">wanga.schema.schema.ObjectNode</a></p>
+<dd class="field-odd"><p>wanga.schema.schema.ObjectNode</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema.return_schema">
-<span class="sig-name descname"><span class="pre">return_schema</span></span><a class="headerlink" href="#wanga.schema.schema.CallableSchema.return_schema" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="wanga.schema.CallableSchema.return_schema">
+<span class="sig-name descname"><span class="pre">return_schema</span></span><a class="headerlink" href="#wanga.schema.CallableSchema.return_schema" title="Link to this definition"></a></dt>
 <dd><p>Schema of the return value.
 None if the function returns None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode">wanga.schema.schema.SchemaNode</a></p>
+<dd class="field-odd"><p>wanga.schema.schema.SchemaNode</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema.long_description">
-<span class="sig-name descname"><span class="pre">long_description</span></span><a class="headerlink" href="#wanga.schema.schema.CallableSchema.long_description" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="wanga.schema.CallableSchema.long_description">
+<span class="sig-name descname"><span class="pre">long_description</span></span><a class="headerlink" href="#wanga.schema.CallableSchema.long_description" title="Link to this definition"></a></dt>
 <dd><p>Long description extracted from the docstring.
 It is used to pass tool descriptions to LLMs. It is not used
 for return values.</p>
@@ -143,14 +218,14 @@ for return values.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema.eval">
-<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#CallableSchema.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.CallableSchema.eval" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="wanga.schema.CallableSchema.eval">
+<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#CallableSchema.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.CallableSchema.eval" title="Link to this definition"></a></dt>
 <dd><p>Call the callable with the given JSON value.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.CallableSchema.json_schema">
-<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flavor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">JsonSchemaFlavor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_long_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AnthropicCallableSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">OpenAICallableSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#CallableSchema.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.CallableSchema.json_schema" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="wanga.schema.CallableSchema.json_schema">
+<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flavor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.JsonSchemaFlavor" title="wanga.schema.jsonschema.JsonSchemaFlavor"><span class="pre">JsonSchemaFlavor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_long_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AnthropicCallableSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">OpenAICallableSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#CallableSchema.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.CallableSchema.json_schema" title="Link to this definition"></a></dt>
 <dd><p>Extract JSON Schema to use with the LLM function call APIs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -167,386 +242,35 @@ Should be set to True for tools, and to False for object constructions.</p></li>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="wanga.schema.schema.MappingNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">MappingNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#MappingNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.MappingNode" title="Link to this definition"></a></dt>
-<dd><p>Node corresponding to generic mapping types.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.MappingNode.mapping_type">
-<span class="sig-name descname"><span class="pre">mapping_type</span></span><a class="headerlink" href="#wanga.schema.schema.MappingNode.mapping_type" title="Link to this definition"></a></dt>
-<dd><p>The mapping type (e.g. <cite>dict</cite> or <cite>collections.defaultdict</cite>).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>type[collections.abc.Mapping]</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="wanga.schema.JsonSchemaFlavor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.</span></span><span class="sig-name descname"><span class="pre">JsonSchemaFlavor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/jsonschema.html#JsonSchemaFlavor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.JsonSchemaFlavor" title="Link to this definition"></a></dt>
+<dd><p>Top-level layout of the JSON schema as accepted by different LLMS.</p>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.MappingNode.key_schema">
-<span class="sig-name descname"><span class="pre">key_schema</span></span><a class="headerlink" href="#wanga.schema.schema.MappingNode.key_schema" title="Link to this definition"></a></dt>
-<dd><p>The schema of the keys in the mapping.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode">wanga.schema.schema.SchemaNode</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.MappingNode.value_schema">
-<span class="sig-name descname"><span class="pre">value_schema</span></span><a class="headerlink" href="#wanga.schema.schema.MappingNode.value_schema" title="Link to this definition"></a></dt>
-<dd><p>The schema of the values in the mapping.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode">wanga.schema.schema.SchemaNode</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.MappingNode.eval">
-<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NoReturn</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#MappingNode.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.MappingNode.eval" title="Link to this definition"></a></dt>
-<dd><p>Evaluate the value against the schema.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.MappingNode.json_schema">
-<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnumJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ObjectJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ArrayJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#MappingNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.MappingNode.json_schema" title="Link to this definition"></a></dt>
-<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wanga.schema.schema.ObjectField">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">ObjectField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#ObjectField"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.ObjectField" title="Link to this definition"></a></dt>
-<dd><p>Field in an object schema.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Name of the field.</p></li>
-<li><p><strong>schema</strong> – Schema of the field.</p></li>
-<li><p><strong>hint</strong> – Hint extracted from the docstring.</p></li>
-<li><p><strong>required</strong> – Whether the field is optional or required.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">ObjectNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constructor_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constructor_signature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#wanga.schema.schema.ObjectField" title="wanga.schema.schema.ObjectField"><span class="pre">ObjectField</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#ObjectNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.ObjectNode" title="Link to this definition"></a></dt>
-<dd><p>Node corresponding to composite types.</p>
-<p>Represents the signature of the constructor.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode.constructor_fn">
-<span class="sig-name descname"><span class="pre">constructor_fn</span></span><a class="headerlink" href="#wanga.schema.schema.ObjectNode.constructor_fn" title="Link to this definition"></a></dt>
-<dd><p>Callable that can be used to construct an object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Callable</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode.constructor_signature">
-<span class="sig-name descname"><span class="pre">constructor_signature</span></span><a class="headerlink" href="#wanga.schema.schema.ObjectNode.constructor_signature" title="Link to this definition"></a></dt>
-<dd><p>Used to properly dispatch positional and
-keyword-only args during evaluation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>inspect.Signature</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#wanga.schema.schema.ObjectNode.name" title="Link to this definition"></a></dt>
-<dd><p>Name of the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode.fields">
-<span class="sig-name descname"><span class="pre">fields</span></span><a class="headerlink" href="#wanga.schema.schema.ObjectNode.fields" title="Link to this definition"></a></dt>
-<dd><p>The fields of the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="#wanga.schema.schema.ObjectField" title="wanga.schema.schema.ObjectField">wanga.schema.schema.ObjectField</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode.hint">
-<span class="sig-name descname"><span class="pre">hint</span></span><a class="headerlink" href="#wanga.schema.schema.ObjectNode.hint" title="Link to this definition"></a></dt>
-<dd><p>Hint extracted from the docstring.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str | None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode.eval">
-<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#ObjectNode.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.ObjectNode.eval" title="Link to this definition"></a></dt>
-<dd><p>Evaluate the value against the schema.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.ObjectNode.json_schema">
-<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ObjectJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#ObjectNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.ObjectNode.json_schema" title="Link to this definition"></a></dt>
-<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wanga.schema.schema.PrimitiveNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">PrimitiveNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primitive_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#PrimitiveNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.PrimitiveNode" title="Link to this definition"></a></dt>
-<dd><p>Node corresponding to primitive types.</p>
-<p>Primitime types are <cite>int</cite>, <cite>float</cite>, <cite>str</cite>, and <cite>bool</cite>.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.PrimitiveNode.primitive_type">
-<span class="sig-name descname"><span class="pre">primitive_type</span></span><a class="headerlink" href="#wanga.schema.schema.PrimitiveNode.primitive_type" title="Link to this definition"></a></dt>
-<dd><p>The primitive type.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>type[int] | type[float] | type[str] | type[bool]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.PrimitiveNode.eval">
-<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#PrimitiveNode.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.PrimitiveNode.eval" title="Link to this definition"></a></dt>
-<dd><p>Evaluate the value against the schema.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.PrimitiveNode.json_schema">
-<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#PrimitiveNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.PrimitiveNode.json_schema" title="Link to this definition"></a></dt>
-<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wanga.schema.schema.SchemaNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaNode</span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SchemaNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SchemaNode" title="Link to this definition"></a></dt>
-<dd><p>Base class for schema nodes.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.SchemaNode.eval">
-<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#SchemaNode.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SchemaNode.eval" title="Link to this definition"></a></dt>
-<dd><p>Evaluate the value against the schema.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.SchemaNode.json_schema">
-<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnumJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ObjectJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ArrayJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SchemaNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SchemaNode.json_schema" title="Link to this definition"></a></dt>
-<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py exception">
-<dt class="sig sig-object py" id="wanga.schema.schema.SchemaValidationError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaValidationError</span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SchemaValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SchemaValidationError" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wanga.schema.schema.SequenceNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">SequenceNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#SequenceNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SequenceNode" title="Link to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Node corresponding to generic homogeneous sequence types.</dt><dd><p>(Does not include tuples and strings)</p>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.SequenceNode.sequence_type">
-<span class="sig-name descname"><span class="pre">sequence_type</span></span><a class="headerlink" href="#wanga.schema.schema.SequenceNode.sequence_type" title="Link to this definition"></a></dt>
-<dd><p>The sequence type.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>type[collections.abc.Sequence]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.SequenceNode.item_schema">
-<span class="sig-name descname"><span class="pre">item_schema</span></span><a class="headerlink" href="#wanga.schema.schema.SequenceNode.item_schema" title="Link to this definition"></a></dt>
-<dd><p>The schema of the items in the sequence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode">wanga.schema.schema.SchemaNode</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.SequenceNode.eval">
-<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SequenceNode.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SequenceNode.eval" title="Link to this definition"></a></dt>
-<dd><p>Evaluate the value against the schema.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.SequenceNode.json_schema">
-<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SequenceNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.SequenceNode.json_schema" title="Link to this definition"></a></dt>
-<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wanga.schema.schema.TupleNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">TupleNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tuple_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_schemas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#TupleNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.TupleNode" title="Link to this definition"></a></dt>
-<dd><p>Node corresponding to tuples and named tuples.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.TupleNode.tuple_type">
-<span class="sig-name descname"><span class="pre">tuple_type</span></span><a class="headerlink" href="#wanga.schema.schema.TupleNode.tuple_type" title="Link to this definition"></a></dt>
-<dd><p>The tuple type (<cite>tuple</cite>, or a subclass of <cite>typing.NamedTuple</cite>).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>type[tuple]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.TupleNode.item_schemas">
-<span class="sig-name descname"><span class="pre">item_schemas</span></span><a class="headerlink" href="#wanga.schema.schema.TupleNode.item_schemas" title="Link to this definition"></a></dt>
-<dd><p>The schemas of the items in the tuple.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode">wanga.schema.schema.SchemaNode</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.TupleNode.eval">
-<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#TupleNode.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.TupleNode.eval" title="Link to this definition"></a></dt>
-<dd><p>Evaluate the value against the schema.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.TupleNode.json_schema">
-<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnumJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ObjectJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ArrayJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#TupleNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.TupleNode.json_schema" title="Link to this definition"></a></dt>
-<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wanga.schema.schema.UndefinedNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">UndefinedNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#UndefinedNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.UndefinedNode" title="Link to this definition"></a></dt>
-<dd><p>Node corresponding to missing, <cite>Any</cite>, or <cite>None</cite> annotations.</p>
-<dl class="simple">
-<dt>Atributes</dt><dd><dl class="simple">
-<dt>original_annotation: <cite>Any</cite> if the annotation is missing or <cite>Any</cite>,</dt><dd><p><cite>None</cite> if the annotation is <cite>None</cite>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.UndefinedNode.eval">
-<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NoReturn</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#UndefinedNode.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.UndefinedNode.eval" title="Link to this definition"></a></dt>
-<dd><p>Evaluate the value against the schema.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.UndefinedNode.json_schema">
-<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#UndefinedNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.UndefinedNode.json_schema" title="Link to this definition"></a></dt>
-<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="wanga.schema.schema.UnionNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">UnionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode"><span class="pre">SchemaNode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/schema.html#UnionNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.UnionNode" title="Link to this definition"></a></dt>
-<dd><p>Node corresponding to <cite>Union</cite> and <cite>Optional</cite> types.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="wanga.schema.schema.UnionNode.options">
-<span class="sig-name descname"><span class="pre">options</span></span><a class="headerlink" href="#wanga.schema.schema.UnionNode.options" title="Link to this definition"></a></dt>
-<dd><p>The schemas of the options in the union.
-May be None in case of optional types.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="#wanga.schema.schema.SchemaNode" title="wanga.schema.schema.SchemaNode">wanga.schema.schema.SchemaNode</a> | None]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.UnionNode.eval">
-<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">JSON</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#UnionNode.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.UnionNode.eval" title="Link to this definition"></a></dt>
-<dd><p>Evaluate the value against the schema.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="wanga.schema.schema.UnionNode.json_schema">
-<span class="sig-name descname"><span class="pre">json_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LeafJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EnumJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ObjectJsonSchema</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ArrayJsonSchema</span></span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#UnionNode.json_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.UnionNode.json_schema" title="Link to this definition"></a></dt>
-<dd><p>Returns the JSON schema of the node to use in the LLM function call APIs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>parent_hint</strong> – Hint from the parent object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py exception">
-<dt class="sig sig-object py" id="wanga.schema.schema.UnsupportedSchemaError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.schema.</span></span><span class="sig-name descname"><span class="pre">UnsupportedSchemaError</span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#UnsupportedSchemaError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.schema.UnsupportedSchemaError" title="Link to this definition"></a></dt>
-<dd></dd></dl>
 
 </section>
-<section id="schema-extraction">
-<h3>Schema Extraction<a class="headerlink" href="#schema-extraction" title="Link to this heading"></a></h3>
+<section id="module-wanga.schema.extractor">
+<span id="schema-extraction"></span><h3>Schema Extraction<a class="headerlink" href="#module-wanga.schema.extractor" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="wanga.schema.extractor.SchemaExtractor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.extractor.</span></span><span class="sig-name descname"><span class="pre">SchemaExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exctractor_fns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#wanga.schema.CallableSchema" title="wanga.schema.schema.CallableSchema"><span class="pre">CallableSchema</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">NOTHING</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/extractor.html#SchemaExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.extractor.SchemaExtractor" title="Link to this definition"></a></dt>
+<dd><p>Extracts schemas from callables.</p>
+<p>Should never be initialized directly by the end user, instead, use <cite>wanga.schema.default_schema_extractor</cite>.
+If you want to add new extraction functions, use the <cite>register_extract_fn</cite> method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wanga.schema.extractor.SchemaExtractor.extractor_functions">
+<span class="sig-name descname"><span class="pre">extractor_functions</span></span><a class="headerlink" href="#wanga.schema.extractor.SchemaExtractor.extractor_functions" title="Link to this definition"></a></dt>
+<dd><p>List of functions that take type annotation as an input
+and try to produce the <cite>CallableSchema</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wanga.schema.extractor.SchemaExtractor.extract_schema">
+<span class="sig-name descname"><span class="pre">extract_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wanga.schema.CallableSchema" title="wanga.schema.schema.CallableSchema"><span class="pre">CallableSchema</span></a></span></span><a class="reference internal" href="_modules/wanga/schema/extractor.html#SchemaExtractor.extract_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.extractor.SchemaExtractor.extract_schema" title="Link to this definition"></a></dt>
+<dd><p>Extract schema from a callable.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 </section>
