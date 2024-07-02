@@ -5,5 +5,5 @@ from .schema import CallableSchema
 __all__ = [
     "CallableSchema",
     "JsonSchemaFlavor",
-    "default_extractor",
+    "default_schema_extractor",
 ]
