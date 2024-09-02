@@ -185,7 +185,7 @@ def _make_header_regex(tags: TagPair, inner_regex: str) -> HeaderRegexes:
     open_tag = re.escape(tags.open)
     close_tag = re.escape(tags.close)
     tag_regex = re.compile(f"({open_tag}.*{close_tag})")
-    full_regex = re.compile(f"(^{open_tag}{_HEADER_BODY_REGEX_STR}{close_tag}$)")
+    full_regex = re.compile(f"(^{open_tag}{inner_regex}{close_tag}$)")
     return HeaderRegexes(tag_regex, full_regex)
 
 
@@ -248,7 +248,11 @@ def _parse_message(header: ParsedHeader, message_str: str) -> Message:
                 tool_invocations.append(_parse_tool_invocation(block_header, arg_str))
             if tool_invocations and content is not None:
                 content = content.removesuffix("\n")
-            return AssistantMessage(name=header.params.get("name"), content=content, tool_invocations=tool_invocations)
+            return AssistantMessage(
+                name=header.params.get("name"),
+                content=content,
+                tool_invocations=tool_invocations,
+            )
         case "tool":
             content = list(_map_headers_to_content(message_blocks))
             return ToolMessage(invocation_id=header.params["id"], content=content)

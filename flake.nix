@@ -24,8 +24,8 @@
             ];
             shellHook = ''
               poetry env use ${python}/bin/python
-              poetry install --no-root
-              export PYTHONPATH=$PYTHONPATH:$PWD/nuggets
+              poetry install --no-root --with dev
+              ln -sf $(poetry env info -p) .venv
             '';
           };
         };

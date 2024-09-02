@@ -1,6 +1,8 @@
 import json
 import re
 
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+
 from ..common import openai, openai_function_tokens
 from ..schema import CallableSchema, JsonSchemaFlavor
 from .messages import AssistantMessage, ImageContent, Message, SystemMessage, ToolInvocation, ToolMessage, UserMessage
@@ -21,7 +23,6 @@ from .model import (
     UsageStats,
 )
 
-_TOKENIZER = "cl100k_base"
 _TOO_MANY_TOKENS = 100_000_000_000
 
 _NUM_TOKENS_ERR_RE = re.compile(r"\((?P<messages>\d+) in the messages(, (?P<functions>\d+) in the functions,)?")
@@ -37,9 +38,18 @@ class OpenaAIModel(Model):
     # We sort the keys such that 'gpt-4-turbo' comes before 'gpt-4'.
     _NAME_PREFIX_TO_CONTEXT_LENGTH = {k: v for k, v in sorted(_NAME_PREFIX_TO_CONTEXT_LENGTH.items(), reverse=True)}
 
-    def __init__(self, model_name: str, api_key: str | None = None, timeout: float = 10 * 60, num_retries: int = 0):
-        self._client = openai.OpenAI(api_key=api_key, timeout=timeout, max_retries=num_retries)
-        self._async_client = openai.AsyncOpenAI(api_key=api_key, timeout=timeout, max_retries=num_retries)
+    def __init__(
+        self,
+        model_name: str,
+        api_key: str | None = None,
+        request_timeout: float = 10 * 60,
+        num_retries: int = 0,
+        retry_on_request_limit: bool = True,
+    ):
+        self._retry_on_request_limit = retry_on_request_limit
+        self._num_retries = num_retries
+        self._client = openai.OpenAI(api_key=api_key, timeout=request_timeout, max_retries=0)
+        self._async_client = openai.AsyncOpenAI(api_key=api_key, timeout=request_timeout, max_retries=0)
         if model_name not in self._list_available_models():
             raise ValueError(f"Model {model_name} is not available")
         self._model_name = model_name
@@ -129,11 +139,16 @@ class OpenaAIModel(Model):
         user_id: str | None = None,
     ) -> ModelResponse:
         kwargs = self._get_reply_kwargs(messages, tools, params, num_options, user_id)
-        try:
-            response = self._client.chat.completions.create(**kwargs)
-        except openai.OpenAIError as e:
-            raise _wrap_error(e)
-        return _parse_response(response)
+
+        @self._create_retry_decorator()
+        def _reply_with_retry():
+            try:
+                response = self._client.chat.completions.create(**kwargs)
+                return _parse_response(response)
+            except openai.OpenAIError as e:
+                raise _wrap_error(e)
+
+        return _reply_with_retry()
 
     async def reply_async(
         self,
@@ -144,11 +159,28 @@ class OpenaAIModel(Model):
         user_id: str | None = None,
     ) -> ModelResponse:
         kwargs = self._get_reply_kwargs(messages, tools, params, num_options, user_id)
-        try:
-            response = await self._async_client.chat.completions.create(**kwargs)
-        except Exception as e:
-            raise _wrap_error(e)
-        return _parse_response(response)
+
+        @self._create_retry_decorator()
+        async def _reply_async_with_retry():
+            try:
+                response = await self._async_client.chat.completions.create(**kwargs)
+                return _parse_response(response)
+            except openai.OpenAIError as e:
+                raise _wrap_error(e)
+
+        return await _reply_async_with_retry()
+
+    def _create_retry_decorator(self):
+        retry_conditions = retry_if_exception_type(ServiceUnvailableError)
+        if self._retry_on_request_limit:
+            retry_conditions |= retry_if_exception_type(RateLimitError)
+
+        return retry(
+            stop=stop_after_attempt(self._num_retries + 1),
+            wait=wait_exponential(multiplier=1, min=4, max=10),
+            retry=retry_conditions,
+            retry_error_callback=lambda retry_state: retry_state.outcome.exception() if retry_state.outcome else None,
+        )
 
 
 def _wrap_error(error: Exception) -> Exception:
@@ -162,6 +194,9 @@ def _wrap_error(error: Exception) -> Exception:
         case openai.RateLimitError() as e:
             return RateLimitError(e)
         case openai.InternalServerError() | openai.APIConnectionError() as e:
+            return ServiceUnvailableError(e)
+        case openai.APIError() as e:
+            # Handle other API errors that might be retryable
             return ServiceUnvailableError(e)
         case _:
             return error
