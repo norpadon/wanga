@@ -91,7 +91,7 @@
     <span class="s2">&quot;ModelResponse&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ModelError&quot;</span><span class="p">,</span>
     <span class="s2">&quot;AuthenticationError&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PromptTooLongError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PromptError&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ModelTimeoutError&quot;</span><span class="p">,</span>
     <span class="s2">&quot;InvalidJsonError&quot;</span><span class="p">,</span>
     <span class="s2">&quot;RateLimitError&quot;</span><span class="p">,</span>
@@ -127,7 +127,7 @@
     <span class="n">top_p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">frequency_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">presence_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">stop_sequences</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">stop_sequences</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">force_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -178,12 +178,10 @@
 
 
 
-<div class="viewcode-block" id="PromptTooLongError">
-<a class="viewcode-back" href="../../../api.html#wanga.models.model.PromptTooLongError">[docs]</a>
-<span class="k">class</span> <span class="nc">PromptTooLongError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">ModelError</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Raised when the total length of prompt and requested response exceeds the maximum allowed number of tokens,</span>
-<span class="sd">    or the size of requested completion exceeds the maximum response size.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<div class="viewcode-block" id="PromptError">
+<a class="viewcode-back" href="../../../api.html#wanga.models.model.PromptError">[docs]</a>
+<span class="k">class</span> <span class="nc">PromptError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">ModelError</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Raised when the prompt is malformed or uses unsupported features.&quot;&quot;&quot;</span></div>
 
 
 

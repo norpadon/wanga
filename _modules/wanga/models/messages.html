@@ -233,7 +233,7 @@
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParsedHeader</span><span class="p">:</span>
         <span class="n">header_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">header_str</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">header_match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MessageSyntaxError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid header: </span><span class="si">{</span><span class="n">header_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MessageSyntaxError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid header: </span><span class="si">{</span><span class="n">header_str</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">header_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
         <span class="n">params_str</span> <span class="o">=</span> <span class="n">header_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">)</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -249,7 +249,7 @@
                 <span class="k">yield</span> <span class="n">text_block</span>
 
 
-<span class="n">_URL_SPECIAL_SYMBOLS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/:!#$%&amp;&#39;*+-.^_`|~&quot;</span><span class="p">)</span>
+<span class="n">_URL_SPECIAL_SYMBOLS</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/:!#$%&amp;&#39;*+-.^_`|~?=&quot;</span><span class="p">)</span>
 <span class="n">_PARAM_KEY_SYMBOLS</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;[a-zA-Z0-9_\-]&quot;</span>
 <span class="n">_PARAM_VALUE_SYMBOLS</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[a-zA-Z0-9</span><span class="si">{</span><span class="n">_URL_SPECIAL_SYMBOLS</span><span class="si">}</span><span class="s2">]&quot;</span>
 

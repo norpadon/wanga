@@ -60,7 +60,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.InvalidJsonError"><code class="docutils literal notranslate"><span class="pre">InvalidJsonError</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.ModelError"><code class="docutils literal notranslate"><span class="pre">ModelError</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.ModelTimeoutError"><code class="docutils literal notranslate"><span class="pre">ModelTimeoutError</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.PromptTooLongError"><code class="docutils literal notranslate"><span class="pre">PromptTooLongError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.PromptError"><code class="docutils literal notranslate"><span class="pre">PromptError</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.RateLimitError"><code class="docutils literal notranslate"><span class="pre">RateLimitError</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.ServiceUnvailableError"><code class="docutils literal notranslate"><span class="pre">ServiceUnvailableError</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.ToolUseMode"><code class="docutils literal notranslate"><span class="pre">ToolUseMode</span></code></a></li>
@@ -156,10 +156,9 @@
 </dd></dl>
 
 <dl class="py exception">
-<dt class="sig sig-object py" id="wanga.models.model.PromptTooLongError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">PromptTooLongError</span></span><a class="reference internal" href="_modules/wanga/models/model.html#PromptTooLongError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.PromptTooLongError" title="Link to this definition"></a></dt>
-<dd><p>Raised when the total length of prompt and requested response exceeds the maximum allowed number of tokens,
-or the size of requested completion exceeds the maximum response size.</p>
+<dt class="sig sig-object py" id="wanga.models.model.PromptError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">PromptError</span></span><a class="reference internal" href="_modules/wanga/models/model.html#PromptError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.PromptError" title="Link to this definition"></a></dt>
+<dd><p>Raised when the prompt is malformed or uses unsupported features.</p>
 </dd></dl>
 
 <dl class="py exception">
