@@ -73,28 +73,29 @@ def call_and_use_tools(
     while True:
         response = model.reply(messages, tool_params, generation_params).response_options[0]
         message = response.message
-        match response.finish_reason:
-            case FinishReason.STOP:
-                if not allow_plain_text_response:
-                    raise RuntimeError("Model generated plain text response.")
+        messages.append(message)
+        if response.finish_reason == FinishReason.STOP:
+            if allow_plain_text_response:
                 return message.content
-            case FinishReason.TOOL_CALL:
-                if message.tool_invocations:
-                    tool_invocation_results = invoke_tools(message, tool_params)
-                    if isinstance(tool_invocation_results, FinalResponse):
-                        return tool_invocation_results.value
-                    tool_messages, errors = tool_invocation_results
-                    messages.extend(tool_messages)
-                    if errors:
-                        if retries_left == 0:
-                            raise errors[0]
-                        retries_left -= 1
-                    else:
-                        retries_left = max_retries_on_invalid_output
-            case FinishReason.CONTENT_FILTER:
-                raise ContentFilterError(f"Content filter triggered: {message.content}")
-            case FinishReason.LENGTH:
-                raise OutputTooLongError(message.content)
+        if response.finish_reason in [FinishReason.STOP, FinishReason.TOOL_CALL]:
+            if message.tool_invocations:
+                tool_invocation_results = invoke_tools(message, tool_params)
+                if isinstance(tool_invocation_results, FinalResponse):
+                    return tool_invocation_results.value
+                tool_messages, errors = tool_invocation_results
+                messages.extend(tool_messages)
+                if errors:
+                    if retries_left == 0:
+                        raise errors[0]
+                    retries_left -= 1
+                else:
+                    retries_left = max_retries_on_invalid_output
+            else:
+                raise RuntimeError("Model returned a stop response without any tool invocations.")
+        elif response.finish_reason == FinishReason.CONTENT_FILTER:
+            raise ContentFilterError(f"Content filter triggered: {message.content}")
+        elif FinishReason.LENGTH:
+            raise OutputTooLongError(message.content)
 
 
 class Runtime:

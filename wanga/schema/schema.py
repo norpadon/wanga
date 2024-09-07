@@ -198,6 +198,10 @@ class UnionNode(SchemaNode):
     options: list[SchemaNode | None]
 
     @property
+    def is_optional(self) -> bool:
+        return None in self.options
+
+    @property
     def is_primitive(self) -> bool:
         if len(self.options) == 1:
             return True
@@ -208,6 +212,12 @@ class UnionNode(SchemaNode):
     def json_schema(self, parent_hint: str | None = None) -> JsonSchema:
         if not self.is_primitive:
             raise UnsupportedSchemaError("JSON schema cannot be generated for non-trivial Union types.")
+        if self.is_optional:
+            options: list[SchemaNode | None] = [option for option in self.options if option is not None]
+            if len(options) == 1:
+                assert options[0] is not None
+                return options[0].json_schema(parent_hint)
+            return UnionNode(options).json_schema(parent_hint)
         type_names = [
             _type_to_jsonname[option.primitive_type]  # type: ignore
             for option in self.options

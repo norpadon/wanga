@@ -226,13 +226,15 @@ def _format_tools(tools: list[CallableSchema]) -> list:
 
 
 def _format_tool_choice(tool_use_mode: ToolUseMode | str):
-    if tool_use_mode == ToolUseMode.AUTO:
-        return "auto"
-    elif tool_use_mode == ToolUseMode.FORCE:
-        return "required"
-    elif tool_use_mode == ToolUseMode.NEVER:
-        return "none"
-    return {"type": "function", "name": tool_use_mode}
+    match tool_use_mode:
+        case ToolUseMode.AUTO:
+            return "auto"
+        case ToolUseMode.FORCE:
+            return "required"
+        case ToolUseMode.NEVER:
+            return "none"
+        case _:
+            return {"type": "function", "name": tool_use_mode}
 
 
 def _format_image_content(image: ImageContent) -> dict:
@@ -289,7 +291,7 @@ def _format_message(message: Message) -> dict:
         case ToolMessage(content=content, invocation_id=invocation_id):
             if not isinstance(content, str):
                 raise ValueError("OpenAI doesn't support images in tool messages.")
-            return {"role": "tool", "content": content, "invocation_id": invocation_id}
+            return {"role": "tool", "content": content, "tool_call_id": invocation_id}
         case _:
             raise ValueError(f"Unknown message type: {message}")
     return result
