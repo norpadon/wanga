@@ -14,7 +14,7 @@ from wanga.schema import DEFAULT_SCHEMA_EXTRACTOR
 
 
 def test_reply():
-    model = OpenaAIModel("gpt-3.5-turbo")
+    model = OpenaAIModel("gpt-4o-mini")
     prompt = r"""
     [|system|]
     You are a helpful assistant.
@@ -41,7 +41,7 @@ def test_context_size():
 
 
 def test_num_tokens():
-    model = OpenaAIModel("gpt-3.5-turbo")
+    model = OpenaAIModel("gpt-4o-mini")
     prompt = r"""
     [|system|]
     You are a helpful assistant.
@@ -61,7 +61,12 @@ def test_num_tokens():
 
 @pytest.fixture
 def model():
-    return OpenaAIModel("gpt-3.5-turbo", num_retries=2, retry_on_request_limit=True)
+    return OpenaAIModel("gpt-4o-mini", num_retries=2, retry_on_request_limit=True)
+
+
+@pytest.fixture
+def vision_model():
+    return OpenaAIModel("gpt-4o", num_retries=2, retry_on_request_limit=True)
 
 
 def test_retry_on_rate_limit(model):
@@ -178,3 +183,12 @@ def test_no_retry_when_disabled(model):
             model.reply(messages)
 
         assert mock_create.call_count == 1
+
+
+def test_vision(vision_model):
+    messages = parse_messages(
+        "How many kittens are in this image?"
+        '<|image url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWHPE0dCs93yAjfxnT2IOR-lbNhvur5FlmkQ&s"|>'
+    )
+    response = vision_model.reply(messages)
+    assert "four" in response.response_options[0].message.content.lower()  # type: ignore

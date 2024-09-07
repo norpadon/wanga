@@ -15,7 +15,7 @@ __all__ = [
     "ModelResponse",
     "ModelError",
     "AuthenticationError",
-    "PromptTooLongError",
+    "PromptError",
     "ModelTimeoutError",
     "InvalidJsonError",
     "RateLimitError",
@@ -48,7 +48,7 @@ class GenerationParams:
     top_p: float | None = None
     frequency_penalty: float | None = None
     presence_penalty: float | None = None
-    stop_sequences: list[str] = field(factory=list)
+    stop_sequences: list[str] | None = None
     random_seed: int | None = None
     force_json: bool = False
 
@@ -90,10 +90,8 @@ class AuthenticationError(ModelError):
     r"""Raised when the API credentials are invalid."""
 
 
-class PromptTooLongError(ValueError, ModelError):
-    r"""Raised when the total length of prompt and requested response exceeds the maximum allowed number of tokens,
-    or the size of requested completion exceeds the maximum response size.
-    """
+class PromptError(ValueError, ModelError):
+    r"""Raised when the prompt is malformed or uses unsupported features."""
 
 
 class ModelTimeoutError(TimeoutError, ModelError):

@@ -154,7 +154,7 @@ class HeaderRegexes(NamedTuple):
     def parse(self, header_str: str) -> ParsedHeader:
         header_match = self.full_regex.match(header_str)
         if header_match is None:
-            raise MessageSyntaxError(f"Invalid header: {header_str}")
+            raise MessageSyntaxError(f"Invalid header: {header_str}.")
         name = header_match.group("name")
         params_str = header_match.group("params")
         params = {}
@@ -170,7 +170,7 @@ class HeaderRegexes(NamedTuple):
                 yield text_block
 
 
-_URL_SPECIAL_SYMBOLS = re.escape(r"/:!#$%&'*+-.^_`|~")
+_URL_SPECIAL_SYMBOLS = re.escape(r"/:!#$%&'*+-.^_`|~?=")
 _PARAM_KEY_SYMBOLS = r"[a-zA-Z0-9_\-]"
 _PARAM_VALUE_SYMBOLS = f"[a-zA-Z0-9{_URL_SPECIAL_SYMBOLS}]"
 

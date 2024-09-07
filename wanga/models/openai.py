@@ -14,7 +14,7 @@ from .model import (
     Model,
     ModelResponse,
     ModelTimeoutError,
-    PromptTooLongError,
+    PromptError,
     RateLimitError,
     ResponseOption,
     ServiceUnvailableError,
@@ -92,7 +92,7 @@ class OpenaAIModel(Model):
     def calculate_num_tokens(self, messages: list[Message], tools: ToolParams) -> int:
         try:
             self.reply(messages, tools, GenerationParams(max_tokens=_TOO_MANY_TOKENS))
-        except PromptTooLongError as e:
+        except PromptError as e:
             err_string = str(e)
             match = _NUM_TOKENS_ERR_RE.search(err_string)
             if match is None:
@@ -134,6 +134,8 @@ class OpenaAIModel(Model):
             tool_choice=tool_choice,
             user=user_id,
         )
+        # OpenAI API breaks if we explicitly pass default values for some keys.
+        result = {k: v for k, v in result.items() if v is not None}
         if tools.tools:
             result["parallel_tool_calls"] = tools.allow_parallel_calls
         return result
@@ -196,7 +198,7 @@ def _wrap_error(error: Exception) -> Exception:
         case openai.APITimeoutError() as e:
             return ModelTimeoutError(e)
         case openai.BadRequestError() as e:
-            return PromptTooLongError(e)
+            return PromptError(e)
         case openai.AuthenticationError() as e:
             return AuthenticationError(e)
         case openai.RateLimitError() as e:
@@ -242,7 +244,12 @@ def _format_image_content(image: ImageContent) -> dict:
         url = image.url
     else:
         url = f"data:image/jpeg;base64,{image.base64}"
-    return {"type": "image_url", "url": url}
+    return {
+        "type": "image_url",
+        "image_url": {
+            "url": url,
+        },
+    }
 
 
 def _format_content(content: str | list[str | ImageContent]):
