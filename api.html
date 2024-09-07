@@ -58,6 +58,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.AuthenticationError"><code class="docutils literal notranslate"><span class="pre">AuthenticationError</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.FinishReason"><code class="docutils literal notranslate"><span class="pre">FinishReason</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.InvalidJsonError"><code class="docutils literal notranslate"><span class="pre">InvalidJsonError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.ModelError"><code class="docutils literal notranslate"><span class="pre">ModelError</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.ModelTimeoutError"><code class="docutils literal notranslate"><span class="pre">ModelTimeoutError</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.PromptTooLongError"><code class="docutils literal notranslate"><span class="pre">PromptTooLongError</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.models.model.RateLimitError"><code class="docutils literal notranslate"><span class="pre">RateLimitError</span></code></a></li>
@@ -71,6 +72,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-wanga.schema">Schema Definition</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.schema.CallableSchema"><code class="docutils literal notranslate"><span class="pre">CallableSchema</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wanga.schema.JsonSchemaFlavor"><code class="docutils literal notranslate"><span class="pre">JsonSchemaFlavor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.SchemaExtractor"><code class="docutils literal notranslate"><span class="pre">SchemaExtractor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wanga.schema.SchemaValidationError"><code class="docutils literal notranslate"><span class="pre">SchemaValidationError</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-wanga.schema.extractor">Schema Extraction</a><ul>
@@ -138,6 +141,12 @@
 <dt class="sig sig-object py" id="wanga.models.model.InvalidJsonError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">InvalidJsonError</span></span><a class="reference internal" href="_modules/wanga/models/model.html#InvalidJsonError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.InvalidJsonError" title="Link to this definition"></a></dt>
 <dd><p>Raised when the model returns a malformed JSON as a response to a function call.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="wanga.models.model.ModelError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.models.model.</span></span><span class="sig-name descname"><span class="pre">ModelError</span></span><a class="reference internal" href="_modules/wanga/models/model.html#ModelError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.models.model.ModelError" title="Link to this definition"></a></dt>
+<dd><p>Base class for all exceptions raised by models.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -246,6 +255,32 @@ Should be set to True for tools, and to False for object constructions.</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.</span></span><span class="sig-name descname"><span class="pre">JsonSchemaFlavor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/jsonschema.html#JsonSchemaFlavor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.JsonSchemaFlavor" title="Link to this definition"></a></dt>
 <dd><p>Top-level layout of the JSON schema as accepted by different LLMS.</p>
 </dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="wanga.schema.SchemaExtractor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exctractor_fns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#wanga.schema.CallableSchema" title="wanga.schema.schema.CallableSchema"><span class="pre">CallableSchema</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">NOTHING</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wanga/schema/extractor.html#SchemaExtractor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.SchemaExtractor" title="Link to this definition"></a></dt>
+<dd><p>Extracts schemas from callables.</p>
+<p>Should never be initialized directly by the end user, instead, use <cite>wanga.schema.default_schema_extractor</cite>.
+If you want to add new extraction functions, use the <cite>register_extract_fn</cite> method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="wanga.schema.SchemaExtractor.extractor_functions">
+<span class="sig-name descname"><span class="pre">extractor_functions</span></span><a class="headerlink" href="#wanga.schema.SchemaExtractor.extractor_functions" title="Link to this definition"></a></dt>
+<dd><p>List of functions that take type annotation as an input
+and try to produce the <cite>CallableSchema</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wanga.schema.SchemaExtractor.extract_schema">
+<span class="sig-name descname"><span class="pre">extract_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#wanga.schema.CallableSchema" title="wanga.schema.schema.CallableSchema"><span class="pre">CallableSchema</span></a></span></span><a class="reference internal" href="_modules/wanga/schema/extractor.html#SchemaExtractor.extract_schema"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.SchemaExtractor.extract_schema" title="Link to this definition"></a></dt>
+<dd><p>Extract schema from a callable.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="wanga.schema.SchemaValidationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">wanga.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaValidationError</span></span><a class="reference internal" href="_modules/wanga/schema/schema.html#SchemaValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#wanga.schema.SchemaValidationError" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="module-wanga.schema.extractor">

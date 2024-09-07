@@ -81,6 +81,24 @@
 <span class="kn">from</span> <span class="nn">..schema.schema</span> <span class="kn">import</span> <span class="n">CallableSchema</span>
 <span class="kn">from</span> <span class="nn">.messages</span> <span class="kn">import</span> <span class="n">AssistantMessage</span><span class="p">,</span> <span class="n">Message</span>
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;ToolUseMode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ToolParams&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GenerationParams&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UsageStats&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;FinishReason&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ResponseOption&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ModelResponse&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ModelError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;AuthenticationError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PromptTooLongError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ModelTimeoutError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;InvalidJsonError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RateLimitError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ServiceUnvailableError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Model&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
 
 <div class="viewcode-block" id="ToolUseMode">
 <a class="viewcode-back" href="../../../api.html#wanga.models.model.ToolUseMode">[docs]</a>
@@ -96,6 +114,10 @@
     <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CallableSchema</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">tool_use_mode</span><span class="p">:</span> <span class="n">ToolUseMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">ToolUseMode</span><span class="o">.</span><span class="n">AUTO</span>
     <span class="n">allow_parallel_calls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">get_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CallableSchema</span><span class="p">:</span>
+        <span class="n">name_to_tool</span> <span class="o">=</span> <span class="p">{</span><span class="n">tool</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">tool</span> <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">name_to_tool</span><span class="p">[</span><span class="n">tool_name</span><span class="p">]</span>
 
 
 <span class="nd">@frozen</span>
@@ -142,16 +164,23 @@
     <span class="n">usage</span><span class="p">:</span> <span class="n">UsageStats</span>
 
 
+<div class="viewcode-block" id="ModelError">
+<a class="viewcode-back" href="../../../api.html#wanga.models.model.ModelError">[docs]</a>
+<span class="k">class</span> <span class="nc">ModelError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class for all exceptions raised by models.&quot;&quot;&quot;</span></div>
+
+
+
 <div class="viewcode-block" id="AuthenticationError">
 <a class="viewcode-back" href="../../../api.html#wanga.models.model.AuthenticationError">[docs]</a>
-<span class="k">class</span> <span class="nc">AuthenticationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">AuthenticationError</span><span class="p">(</span><span class="n">ModelError</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Raised when the API credentials are invalid.&quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="PromptTooLongError">
 <a class="viewcode-back" href="../../../api.html#wanga.models.model.PromptTooLongError">[docs]</a>
-<span class="k">class</span> <span class="nc">PromptTooLongError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">PromptTooLongError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">ModelError</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Raised when the total length of prompt and requested response exceeds the maximum allowed number of tokens,</span>
 <span class="sd">    or the size of requested completion exceeds the maximum response size.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
@@ -160,28 +189,28 @@
 
 <div class="viewcode-block" id="ModelTimeoutError">
 <a class="viewcode-back" href="../../../api.html#wanga.models.model.ModelTimeoutError">[docs]</a>
-<span class="k">class</span> <span class="nc">ModelTimeoutError</span><span class="p">(</span><span class="ne">TimeoutError</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ModelTimeoutError</span><span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">ModelError</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Raised when the model takes too long to generate a response.&quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="InvalidJsonError">
 <a class="viewcode-back" href="../../../api.html#wanga.models.model.InvalidJsonError">[docs]</a>
-<span class="k">class</span> <span class="nc">InvalidJsonError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">InvalidJsonError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">ModelError</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Raised when the model returns a malformed JSON as a response to a function call.&quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="RateLimitError">
 <a class="viewcode-back" href="../../../api.html#wanga.models.model.RateLimitError">[docs]</a>
-<span class="k">class</span> <span class="nc">RateLimitError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">RateLimitError</span><span class="p">(</span><span class="n">ModelError</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Raised when the request limit is exceeded.&quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="ServiceUnvailableError">
 <a class="viewcode-back" href="../../../api.html#wanga.models.model.ServiceUnvailableError">[docs]</a>
-<span class="k">class</span> <span class="nc">ServiceUnvailableError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ServiceUnvailableError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">ModelError</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Raised when the API is down.&quot;&quot;&quot;</span></div>
 
 
@@ -208,7 +237,16 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Name of the model in the format {provider_name}-{model_name}.</span>
+
+<span class="sd">        Example: &quot;openai-gpt-3.5-turbo&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">context_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Maximum number of tokens that can be used in the prompt and completion.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">estimate_num_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Message</span><span class="p">],</span> <span class="n">tools</span><span class="p">:</span> <span class="n">ToolParams</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>

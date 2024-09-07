@@ -82,8 +82,6 @@
 <span class="kn">from</span> <span class="nn">attrs</span> <span class="kn">import</span> <span class="n">define</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">frozen</span>
 <span class="kn">from</span> <span class="nn">docstring_parser</span> <span class="kn">import</span> <span class="n">parse</span> <span class="k">as</span> <span class="n">parse_docstring</span>
 
-<span class="kn">from</span> <span class="nn">wanga.schema.utils</span> <span class="kn">import</span> <span class="n">strip_self</span>
-
 <span class="kn">from</span> <span class="nn">.extractor_fns</span> <span class="kn">import</span> <span class="n">ExtractorFn</span><span class="p">,</span> <span class="n">extract_datetime</span>
 <span class="kn">from</span> <span class="nn">.normalize</span> <span class="kn">import</span> <span class="n">normalize_annotation</span>
 <span class="kn">from</span> <span class="nn">.schema</span> <span class="kn">import</span> <span class="p">(</span>
@@ -99,10 +97,11 @@
     <span class="n">UndefinedNode</span><span class="p">,</span>
     <span class="n">UnionNode</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">strip_self</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;SchemaExtractor&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;default_schema_extractor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DEFAULT_SCHEMA_EXTRACTOR&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -118,7 +117,7 @@
 
 
 <div class="viewcode-block" id="SchemaExtractor">
-<a class="viewcode-back" href="../../../api.html#wanga.schema.extractor.SchemaExtractor">[docs]</a>
+<a class="viewcode-back" href="../../../api.html#wanga.schema.SchemaExtractor">[docs]</a>
 <span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">SchemaExtractor</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extracts schemas from callables.</span>
@@ -229,7 +228,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type annotation: </span><span class="si">{</span><span class="n">annotation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SchemaExtractor.extract_schema">
-<a class="viewcode-back" href="../../../api.html#wanga.schema.extractor.SchemaExtractor.extract_schema">[docs]</a>
+<a class="viewcode-back" href="../../../api.html#wanga.schema.SchemaExtractor.extract_schema">[docs]</a>
     <span class="k">def</span> <span class="nf">extract_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CallableSchema</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract schema from a callable.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -290,7 +289,7 @@
 
 
 
-<span class="n">default_schema_extractor</span> <span class="o">=</span> <span class="n">SchemaExtractor</span><span class="p">()</span>
+<span class="n">DEFAULT_SCHEMA_EXTRACTOR</span> <span class="o">=</span> <span class="n">SchemaExtractor</span><span class="p">()</span>
 </pre></div>
 
            </div>

@@ -125,8 +125,11 @@
     <span class="k">pass</span>
 
 
+<div class="viewcode-block" id="SchemaValidationError">
+<a class="viewcode-back" href="../../../api.html#wanga.schema.SchemaValidationError">[docs]</a>
 <span class="k">class</span> <span class="nc">SchemaValidationError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
-    <span class="k">pass</span>
+    <span class="k">pass</span></div>
+
 
 
 <span class="nd">@frozen</span>
@@ -275,6 +278,10 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_primitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="kc">None</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">option</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">PrimitiveNode</span><span class="p">)</span> <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_hint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
@@ -403,15 +410,17 @@
             <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constructor_signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">param</span><span class="o">.</span><span class="n">POSITIONAL_ONLY</span>
         <span class="p">}</span>
-        <span class="n">possible_args</span> <span class="o">=</span> <span class="p">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">}</span>
         <span class="n">missing_args</span> <span class="o">=</span> <span class="p">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span> <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">required</span><span class="p">}</span>
+        <span class="n">name_to_schema</span> <span class="o">=</span> <span class="p">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">field</span><span class="o">.</span><span class="n">schema</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fields</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">arg_name</span><span class="p">,</span> <span class="n">arg_value</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">arg_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">possible_args</span><span class="p">:</span>
+            <span class="n">arg_schema</span> <span class="o">=</span> <span class="n">name_to_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">arg_schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">SchemaValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected field: </span><span class="si">{</span><span class="n">arg_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">evaled_arg_value</span> <span class="o">=</span> <span class="n">arg_schema</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">arg_value</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">arg_name</span> <span class="ow">in</span> <span class="n">pos_only_args</span><span class="p">:</span>
-                <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg_value</span><span class="p">)</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">evaled_arg_value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="n">arg_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">arg_value</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">arg_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">evaled_arg_value</span>
             <span class="k">if</span> <span class="n">arg_name</span> <span class="ow">in</span> <span class="n">missing_args</span><span class="p">:</span>
                 <span class="n">missing_args</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">arg_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">missing_args</span><span class="p">:</span>
@@ -438,6 +447,10 @@
     <span class="n">return_schema</span><span class="p">:</span> <span class="n">SchemaNode</span>
     <span class="n">long_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_schema</span><span class="o">.</span><span class="n">name</span>
+
 <div class="viewcode-block" id="CallableSchema.json_schema">
 <a class="viewcode-back" href="../../../api.html#wanga.schema.CallableSchema.json_schema">[docs]</a>
     <span class="k">def</span> <span class="nf">json_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flavor</span><span class="p">:</span> <span class="n">JsonSchemaFlavor</span><span class="p">,</span> <span class="n">include_long_description</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CallableJsonSchema</span><span class="p">:</span>
@@ -457,14 +470,14 @@
         <span class="n">full_description</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_description</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">flavor</span> <span class="ow">is</span> <span class="n">JsonSchemaFlavor</span><span class="o">.</span><span class="n">ANTHROPIC</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">AnthropicCallableSchema</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">call_schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">input_schema</span><span class="o">=</span><span class="n">evolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">call_schema</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json_schema</span><span class="p">(),</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">full_description</span><span class="p">:</span>
                 <span class="n">result</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_description</span>
         <span class="k">elif</span> <span class="n">flavor</span> <span class="ow">is</span> <span class="n">JsonSchemaFlavor</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">OpenAICallableSchema</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">call_schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="n">evolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">call_schema</span><span class="p">,</span> <span class="n">hint</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">json_schema</span><span class="p">(),</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">full_description</span><span class="p">:</span>
