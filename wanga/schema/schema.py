@@ -199,6 +199,10 @@ class UnionNode(SchemaNode):
 
     @property
     def is_primitive(self) -> bool:
+        if len(self.options) == 1:
+            return True
+        if len(self.options) == 2 and None in self.options:
+            return True
         return all(option is None or isinstance(option, PrimitiveNode) for option in self.options)
 
     def json_schema(self, parent_hint: str | None = None) -> JsonSchema:
@@ -327,15 +331,17 @@ class ObjectNode(SchemaNode):
             for param in self.constructor_signature.parameters.values()
             if param.kind == param.POSITIONAL_ONLY
         }
-        possible_args = {field.name for field in self.fields}
         missing_args = {field.name for field in self.fields if field.required}
+        name_to_schema = {field.name: field.schema for field in self.fields}
         for arg_name, arg_value in value.items():
-            if arg_name not in possible_args:
+            arg_schema = name_to_schema.get(arg_name)
+            if arg_schema is None:
                 raise SchemaValidationError(f"Unexpected field: {arg_name}")
+            evaled_arg_value = arg_schema.eval(arg_value)
             if arg_name in pos_only_args:
-                args.append(arg_value)
+                args.append(evaled_arg_value)
             else:
-                kwargs[arg_name] = arg_value
+                kwargs[arg_name] = evaled_arg_value
             if arg_name in missing_args:
                 missing_args.remove(arg_name)
         if missing_args:
@@ -360,6 +366,10 @@ class CallableSchema:
     return_schema: SchemaNode
     long_description: str | None
 
+    @property
+    def name(self) -> str:
+        return self.call_schema.name
+
     def json_schema(self, flavor: JsonSchemaFlavor, include_long_description: bool = False) -> CallableJsonSchema:
         r"""Extract JSON Schema to use with the LLM function call APIs.
 
@@ -377,14 +387,14 @@ class CallableSchema:
         full_description = "\n\n".join(full_description)
         if flavor is JsonSchemaFlavor.ANTHROPIC:
             result = AnthropicCallableSchema(
-                name=self.call_schema.name,
+                name=self.name,
                 input_schema=evolve(self.call_schema, hint=None).json_schema(),
             )
             if full_description:
                 result["description"] = full_description
         elif flavor is JsonSchemaFlavor.OPENAI:
             result = OpenAICallableSchema(
-                name=self.call_schema.name,
+                name=self.name,
                 parameters=evolve(self.call_schema, hint=None).json_schema(),
             )
             if full_description:

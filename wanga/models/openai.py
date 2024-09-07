@@ -28,12 +28,16 @@ _TOO_MANY_TOKENS = 100_000_000_000
 _NUM_TOKENS_ERR_RE = re.compile(r"\((?P<messages>\d+) in the messages(, (?P<functions>\d+) in the functions,)?")
 
 
+__all__ = ["OpenaAIModel"]
+
+
 class OpenaAIModel(Model):
     _NAME_PREFIX_TO_CONTEXT_LENGTH = {
         "gpt-3.5-turbo": 16538,
         "gpt-4": 8192,
         "gpt-4-turbo": 128000,
         "gpt-4o": 128000,
+        "gpt-4o-mini": 128000,
     }
     # We sort the keys such that 'gpt-4-turbo' comes before 'gpt-4'.
     _NAME_PREFIX_TO_CONTEXT_LENGTH = {k: v for k, v in sorted(_NAME_PREFIX_TO_CONTEXT_LENGTH.items(), reverse=True)}
@@ -53,6 +57,10 @@ class OpenaAIModel(Model):
         if model_name not in self._list_available_models():
             raise ValueError(f"Model {model_name} is not available")
         self._model_name = model_name
+
+    @property
+    def name(self) -> str:
+        return f"openai-{self._model_name}"
 
     def _list_available_models(self) -> list[str]:
         model_list = self._client.models.list()

@@ -15,6 +15,7 @@ __all__ = [
     "ToolInvocation",
     "ToolMessage",
     "UserMessage",
+    "parse_messages",
 ]
 
 

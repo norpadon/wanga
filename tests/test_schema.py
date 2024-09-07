@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from attrs import frozen
 from pydantic import BaseModel
 
-from wanga.schema.extractor import default_schema_extractor
+from wanga.schema.extractor import DEFAULT_SCHEMA_EXTRACTOR
 from wanga.schema.jsonschema import JsonSchemaFlavor
 from wanga.schema.normalize import normalize_annotation, unpack_optional
 from wanga.schema.schema import (
@@ -102,7 +102,7 @@ def test_extract_schema():
         long_description=None,
     )
 
-    assert default_schema_extractor.extract_schema(foo) == foo_schema
+    assert DEFAULT_SCHEMA_EXTRACTOR.extract_schema(foo) == foo_schema
 
     def bar(x: typing.List[int], y: typing.Literal["hehe"] | float) -> int:  # noqa
         r"""Bar.
@@ -148,7 +148,7 @@ def test_extract_schema():
         long_description="Blah blah blah.",
     )
 
-    assert default_schema_extractor.extract_schema(bar) == bar_schema
+    assert DEFAULT_SCHEMA_EXTRACTOR.extract_schema(bar) == bar_schema
 
     class Baz:
         r"""I am Baz."""
@@ -186,7 +186,7 @@ def test_extract_schema():
         long_description=None,
     )
 
-    assert default_schema_extractor.extract_schema(Baz) == baz_schema
+    assert DEFAULT_SCHEMA_EXTRACTOR.extract_schema(Baz) == baz_schema
 
     @frozen
     class Qux:
@@ -227,7 +227,7 @@ def test_extract_schema():
         long_description="I have attributes instead of arguments!",
     )
 
-    assert default_schema_extractor.extract_schema(Qux) == qux_schema
+    assert DEFAULT_SCHEMA_EXTRACTOR.extract_schema(Qux) == qux_schema
 
     @dataclass
     class Goo:
@@ -302,7 +302,7 @@ def test_extract_schema():
         long_description="I am a dataclass, and I use the stupid ReST docstring syntax!",
     )
 
-    assert default_schema_extractor.extract_schema(Goo) == goo_schema
+    assert DEFAULT_SCHEMA_EXTRACTOR.extract_schema(Goo) == goo_schema
 
     class Hoo(BaseModel):
         r"""I am Hoo.
@@ -356,7 +356,7 @@ def test_extract_schema():
         long_description="I am a Pydantic model!\nAnd I use Numpy Doc format!",
     )
 
-    assert default_schema_extractor.extract_schema(Hoo) == hoo_schema
+    assert DEFAULT_SCHEMA_EXTRACTOR.extract_schema(Hoo) == hoo_schema
 
 
 def test_json_schema():
@@ -420,15 +420,21 @@ def test_json_schema():
         },
     }
 
-    core_schema = default_schema_extractor.extract_schema(foo)
+    core_schema = DEFAULT_SCHEMA_EXTRACTOR.extract_schema(foo)
     json_schema = core_schema.json_schema(JsonSchemaFlavor.OPENAI, include_long_description=True)
     assert json_schema == expected_json_schema
 
 
 def test_eval():
     @frozen
+    class Huhu:
+        meee: int
+
+    @frozen
     class Hehe:
         hehehe: int
+        hohoho: str
+        huhuhu: Huhu
 
     def foo(
         x: float,
@@ -438,14 +444,15 @@ def test_eval():
         z: typing.Literal["a", "b"],
         hehe: Hehe | None = None,
     ):
-        return x
+        assert hehe is not None
+        return hehe.huhuhu.meee
 
     json_input = {
         "x": 1,
         "y": 2,
         "z": "a",
-        "hehe": {"hehehe": 3},
+        "hehe": {"hehehe": 3, "hohoho": "haha", "huhuhu": {"meee": 4}},
     }
 
-    core_schema = default_schema_extractor.extract_schema(foo)
-    assert core_schema.eval(json_input) == 1.0
+    core_schema = DEFAULT_SCHEMA_EXTRACTOR.extract_schema(foo)
+    assert core_schema.eval(json_input) == 4

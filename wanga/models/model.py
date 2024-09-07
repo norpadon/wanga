@@ -5,6 +5,24 @@ from attrs import field, frozen
 from ..schema.schema import CallableSchema
 from .messages import AssistantMessage, Message
 
+__all__ = [
+    "ToolUseMode",
+    "ToolParams",
+    "GenerationParams",
+    "UsageStats",
+    "FinishReason",
+    "ResponseOption",
+    "ModelResponse",
+    "ModelError",
+    "AuthenticationError",
+    "PromptTooLongError",
+    "ModelTimeoutError",
+    "InvalidJsonError",
+    "RateLimitError",
+    "ServiceUnvailableError",
+    "Model",
+]
+
 
 class ToolUseMode(Enum):
     AUTO = "auto"
@@ -17,6 +35,10 @@ class ToolParams:
     tools: list[CallableSchema] = field(factory=list)
     tool_use_mode: ToolUseMode | str = ToolUseMode.AUTO
     allow_parallel_calls: bool = False
+
+    def get_tool(self, tool_name: str) -> CallableSchema:
+        name_to_tool = {tool.name: tool for tool in self.tools}
+        return name_to_tool[tool_name]
 
 
 @frozen
@@ -60,29 +82,33 @@ class ModelResponse:
     usage: UsageStats
 
 
-class AuthenticationError(Exception):
+class ModelError(Exception):
+    r"""Base class for all exceptions raised by models."""
+
+
+class AuthenticationError(ModelError):
     r"""Raised when the API credentials are invalid."""
 
 
-class PromptTooLongError(ValueError):
+class PromptTooLongError(ValueError, ModelError):
     r"""Raised when the total length of prompt and requested response exceeds the maximum allowed number of tokens,
     or the size of requested completion exceeds the maximum response size.
     """
 
 
-class ModelTimeoutError(TimeoutError):
+class ModelTimeoutError(TimeoutError, ModelError):
     r"""Raised when the model takes too long to generate a response."""
 
 
-class InvalidJsonError(RuntimeError):
+class InvalidJsonError(RuntimeError, ModelError):
     r"""Raised when the model returns a malformed JSON as a response to a function call."""
 
 
-class RateLimitError(Exception):
+class RateLimitError(ModelError):
     r"""Raised when the request limit is exceeded."""
 
 
-class ServiceUnvailableError(RuntimeError):
+class ServiceUnvailableError(RuntimeError, ModelError):
     r"""Raised when the API is down."""
 
 
@@ -108,7 +134,16 @@ class Model:
         raise NotImplementedError
 
     @property
+    def name(self) -> str:
+        r"""Name of the model in the format {provider_name}-{model_name}.
+
+        Example: "openai-gpt-3.5-turbo"
+        """
+        raise NotImplementedError
+
+    @property
     def context_length(self) -> int:
+        r"""Maximum number of tokens that can be used in the prompt and completion."""
         raise NotImplementedError
 
     def estimate_num_tokens(self, messages: list[Message], tools: ToolParams) -> int:

@@ -6,8 +6,6 @@ from typing import Any, Literal, Union, get_args, get_origin
 from attrs import define, field, frozen
 from docstring_parser import parse as parse_docstring
 
-from wanga.schema.utils import strip_self
-
 from .extractor_fns import ExtractorFn, extract_datetime
 from .normalize import normalize_annotation
 from .schema import (
@@ -23,10 +21,11 @@ from .schema import (
     UndefinedNode,
     UnionNode,
 )
+from .utils import strip_self
 
 __all__ = [
     "SchemaExtractor",
-    "default_schema_extractor",
+    "DEFAULT_SCHEMA_EXTRACTOR",
 ]
 
 
@@ -208,4 +207,4 @@ class SchemaExtractor:
         )
 
 
-default_schema_extractor = SchemaExtractor()
+DEFAULT_SCHEMA_EXTRACTOR = SchemaExtractor()

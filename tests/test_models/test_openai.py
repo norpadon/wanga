@@ -10,7 +10,7 @@ from wanga.models.messages import parse_messages
 from wanga.models.model import FinishReason, ModelResponse, ToolParams
 from wanga.models.model import RateLimitError as WangaRateLimitError
 from wanga.models.openai import OpenaAIModel
-from wanga.schema import default_schema_extractor
+from wanga.schema import DEFAULT_SCHEMA_EXTRACTOR
 
 
 def test_reply():
@@ -52,7 +52,7 @@ def test_num_tokens():
     def tool(x: int, y: str):
         pass
 
-    tool_schema = default_schema_extractor.extract_schema(tool)
+    tool_schema = DEFAULT_SCHEMA_EXTRACTOR.extract_schema(tool)
     prompt = dedent(prompt.removeprefix("\n"))
     messages = parse_messages(prompt)
     tools = ToolParams(tools=[tool_schema])
