@@ -187,7 +187,7 @@ def test_ai_function_error_handling():
             raise NotImplementedError
 
         with pytest.raises(SchemaValidationError):
-            result = error_prone_function()
+            error_prone_function()
 
     assert mock_model.call_count == 4  # Initial call + 3 retries
 
