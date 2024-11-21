@@ -1,16 +1,18 @@
 import collections
 import collections.abc
 import inspect
+import platform
 import typing
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from textwrap import dedent
 
 from attrs import frozen
 from pydantic import BaseModel
 
 from wanga.schema.extractor import DEFAULT_SCHEMA_EXTRACTOR
 from wanga.schema.jsonschema import JsonSchemaFlavor
-from wanga.schema.normalize import normalize_annotation, unpack_optional
+from wanga.schema.normalize import normalise_aliases, normalize_annotation, unpack_optional
 from wanga.schema.schema import (
     CallableSchema,
     LiteralNode,
@@ -357,6 +359,36 @@ def test_extract_schema():
     )
 
     assert DEFAULT_SCHEMA_EXTRACTOR.extract_schema(Hoo) == hoo_schema
+
+
+def test_type_statement():
+    _, minor, _ = platform.python_version_tuple()
+    if int(minor) < 12:
+        return
+
+    expr = r"""
+    type A = int | float
+
+    assert normalise_aliases(A) == int | float  # type: ignore
+
+    def foo() -> A:  # type: ignore
+        pass
+
+    expected = UnionNode([PrimitiveNode(primitive_type=int), PrimitiveNode(primitive_type=float)])
+    assert DEFAULT_SCHEMA_EXTRACTOR.extract_schema(foo).return_schema == expected
+
+    def bar() -> list[A]:  # type: ignore
+        pass
+
+    expected = SequenceNode(
+        sequence_type=list,
+        item_schema=UnionNode([PrimitiveNode(primitive_type=int), PrimitiveNode(primitive_type=float)]),
+    )
+    assert DEFAULT_SCHEMA_EXTRACTOR.extract_schema(bar).return_schema == expected
+    """
+
+    expr = dedent(expr)
+    exec(expr)
 
 
 def test_json_schema():

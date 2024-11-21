@@ -1,8 +1,17 @@
 import collections
 import collections.abc
+import platform
 import typing  # noqa: F401
 from types import NoneType, UnionType
 from typing import Annotated, Literal, Union, get_args, get_origin
+
+if int(platform.python_version_tuple()[1]) >= 12:
+    from typing import TypeAliasType  # type: ignore
+else:
+
+    class TypeAliasType:
+        pass
+
 
 from .utils import TypeAnnotation
 
@@ -17,6 +26,12 @@ def _fold_or(annotations: collections.abc.Sequence[TypeAnnotation]) -> type[Unio
     for annotation in annotations[1:]:
         result = result | annotation
     return result
+
+
+def normalise_aliases(annotation: TypeAnnotation) -> TypeAnnotation:
+    if isinstance(annotation, TypeAliasType):
+        return annotation.__value__  # type: ignore
+    return annotation
 
 
 def unpack_optional(annotation: TypeAnnotation) -> type[UnionType] | None:
@@ -92,6 +107,7 @@ ABSTRACT_TO_CONCRETE = {
 
 
 def _normalize_annotation_rec(annotation: TypeAnnotation, concretize: bool = False) -> TypeAnnotation:
+    annotation = normalise_aliases(annotation)
     origin = get_origin(annotation)
     args = get_args(annotation)
     if origin is None:
