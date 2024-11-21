@@ -189,7 +189,6 @@ class OpenAIModel(Model):
             stop=stop_after_attempt(self._num_retries + 1),
             wait=wait_exponential(multiplier=1, min=4, max=10),
             retry=retry_conditions,
-            retry_error_callback=lambda retry_state: retry_state.outcome.exception() if retry_state.outcome else None,
             reraise=True,
         )
 
