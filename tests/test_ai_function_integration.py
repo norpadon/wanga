@@ -5,10 +5,10 @@ from typing import List, Literal, Optional
 import pytest
 
 from wanga.function import ai_function
-from wanga.models.openai import OpenaAIModel
+from wanga.models.openai import OpenAIModel
 from wanga.runtime import Runtime
 
-model = OpenaAIModel("gpt-4o-mini")
+model = OpenAIModel("gpt-4o-mini")
 
 
 @pytest.fixture(scope="module")

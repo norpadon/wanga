@@ -28,10 +28,10 @@ _TOO_MANY_TOKENS = 100_000_000_000
 _NUM_TOKENS_ERR_RE = re.compile(r"\((?P<messages>\d+) in the messages(, (?P<functions>\d+) in the functions,)?")
 
 
-__all__ = ["OpenaAIModel"]
+__all__ = ["OpenAIModel"]
 
 
-class OpenaAIModel(Model):
+class OpenAIModel(Model):
     _NAME_PREFIX_TO_CONTEXT_LENGTH = {
         "gpt-3.5-turbo": 16538,
         "gpt-4": 8192,

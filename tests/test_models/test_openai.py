@@ -9,12 +9,12 @@ from openai import APIConnectionError, RateLimitError
 from wanga.models.messages import parse_messages
 from wanga.models.model import FinishReason, ModelResponse, ToolParams
 from wanga.models.model import RateLimitError as WangaRateLimitError
-from wanga.models.openai import OpenaAIModel
+from wanga.models.openai import OpenAIModel
 from wanga.schema import DEFAULT_SCHEMA_EXTRACTOR
 
 
 def test_reply():
-    model = OpenaAIModel("gpt-4o-mini")
+    model = OpenAIModel("gpt-4o-mini")
     prompt = r"""
     [|system|]
     You are a helpful assistant.
@@ -36,12 +36,12 @@ def test_reply():
 
 
 def test_context_size():
-    assert OpenaAIModel("gpt-4-turbo").context_length == 128000
-    assert OpenaAIModel("gpt-4").context_length == 8192
+    assert OpenAIModel("gpt-4-turbo").context_length == 128000
+    assert OpenAIModel("gpt-4").context_length == 8192
 
 
 def test_num_tokens():
-    model = OpenaAIModel("gpt-4o-mini")
+    model = OpenAIModel("gpt-4o-mini")
     prompt = r"""
     [|system|]
     You are a helpful assistant.
@@ -61,12 +61,12 @@ def test_num_tokens():
 
 @pytest.fixture
 def model():
-    return OpenaAIModel("gpt-4o-mini", num_retries=2, retry_on_request_limit=True)
+    return OpenAIModel("gpt-4o-mini", num_retries=2, retry_on_request_limit=True)
 
 
 @pytest.fixture
 def vision_model():
-    return OpenaAIModel("gpt-4o", num_retries=2, retry_on_request_limit=True)
+    return OpenAIModel("gpt-4o", num_retries=2, retry_on_request_limit=True)
 
 
 def test_retry_on_rate_limit(model):
