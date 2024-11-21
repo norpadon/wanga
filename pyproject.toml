@@ -1,6 +1,6 @@
 [project]
 name = "wanga"
-version = "0.1.0"
+version = "0.1.1"
 description = "A library for interacting with Large Language Models."
 authors = [{ name = "Artur Chakhvadze", email = "norpadon@gmail.com" }]
 license = { text = "MIT" }
@@ -45,9 +45,7 @@ target-version = "py310"
 line-length = 119
 
 [tool.uv]
-dev-dependencies = [
-    "toml>=0.10.2",
-]
+dev-dependencies = ["toml>=0.10.2"]
 
 [build-system]
 requires = ["hatchling"]
