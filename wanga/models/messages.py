@@ -31,8 +31,8 @@ _CONTENT_BLOCK_TAGS = TagPair(r"<|", r"|>")
 _logger = logging.getLogger(__name__)
 
 
-def _format_header(_tags: TagPair, _name: str, /, **kwargs: str) -> str:
-    param_str = "".join(f' {key}="{value}"' for key, value in kwargs.items())
+def _format_header(_tags: TagPair, _name: str, /, **kwargs: str | None) -> str:
+    param_str = "".join(f' {key}="{value}"' for key, value in kwargs.items() if value is not None)
     return f"{_tags.open}{_name}{param_str}{_tags.close}"
 
 
@@ -92,7 +92,7 @@ class UserMessage(Message):
 
 @frozen
 class ToolInvocation:
-    invocation_id: str
+    invocation_id: str | None
     name: str
     arguments: JSON
 
@@ -126,7 +126,7 @@ class AssistantMessage(Message):
 
 @frozen
 class ToolMessage(Message):
-    invocation_id: str
+    invocation_id: str | None
     content: str | list[str | ImageContent]
 
     def __str__(self) -> str:

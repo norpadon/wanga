@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from functools import wraps
 from typing import Callable, Generic, ParamSpec, TypeVar
 
-from attrs import field, frozen
+from attrs import evolve, field, frozen
 from jinja2 import Template
 
 from .models import GenerationParams
@@ -69,6 +69,8 @@ def _extract_ai_function(
     max_retries_on_invalid_output: int,
 ) -> AIFunction[_P, _R]:
     return_schema = _extract_return_schema(callable, schema_extractor)
+    # if return_schema is not None and generation_params.force_json is None:
+    #     generation_params = evolve(generation_params, force_json=True)
     prompt_template = _extract_promt_template(callable)
     tools_schemas = [schema_extractor.extract_schema(tool) for tool in tools]
     return AIFunction(

@@ -403,6 +403,19 @@ wheels = [
 ]
 
 [[package]]
+name = "ollama"
+version = "0.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d7/74/88cd1cce88c8ae5430ef2913ea86e946745cb94a59349c27e074d5d19393/ollama-0.4.1.tar.gz", hash = "sha256:8c6b5e7ff80dd0b8692150b03359f60bac7ca162b088c604069409142a684ad3", size = 12882 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bb/bd/77240baf373e4e04639d1a78a589dad2565cc80572cb8f1d56c8f6244f39/ollama-0.4.1-py3-none-any.whl", hash = "sha256:b6fb16aa5a3652633e1716acb12cf2f44aa18beb229329e46a0302734822dfad", size = 12901 },
+]
+
+[[package]]
 name = "openai"
 version = "1.55.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1019,7 +1032,7 @@ wheels = [
 
 [[package]]
 name = "wanga"
-version = "0.2.3"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },
@@ -1046,14 +1059,16 @@ dev = [
     { name = "sphinxcontrib-napoleon" },
     { name = "toml" },
 ]
+ollama = [
+    { name = "httpx" },
+    { name = "ollama" },
+    { name = "pillow" },
+    { name = "pydantic" },
+    { name = "requests" },
+]
 openai = [
     { name = "openai" },
     { name = "openai-function-tokens" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "toml" },
 ]
 
 [package.metadata]
@@ -1061,16 +1076,21 @@ requires-dist = [
     { name = "anthropic", marker = "extra == 'anthropic'", specifier = ">=0.30.0" },
     { name = "attrs", specifier = ">=23.2.0" },
     { name = "docstring-parser", specifier = ">=0.16" },
+    { name = "httpx", marker = "extra == 'ollama'", specifier = ">=0.27.2" },
     { name = "jinja2", specifier = ">=3.1.4" },
     { name = "json5", specifier = ">=0.9.25" },
+    { name = "ollama", marker = "extra == 'ollama'", specifier = ">=0.4.1" },
     { name = "openai", marker = "extra == 'openai'", specifier = ">=1.35.7" },
     { name = "openai-function-tokens", marker = "extra == 'openai'", specifier = ">=0.1.2" },
     { name = "pillow", marker = "extra == 'dev'", specifier = ">=10.3.0" },
+    { name = "pillow", marker = "extra == 'ollama'", specifier = ">=11.0.0" },
     { name = "pydantic", marker = "extra == 'dev'", specifier = ">=2.7.4" },
+    { name = "pydantic", marker = "extra == 'ollama'", specifier = ">=2.10.0" },
     { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.369" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.2.2" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
     { name = "pytest-dotenv", marker = "extra == 'dev'", specifier = ">=0.5.2" },
+    { name = "requests", marker = "extra == 'ollama'", specifier = ">=2.32.3" },
     { name = "sphinx", marker = "extra == 'dev'", specifier = ">=7.3.7" },
     { name = "sphinx-rtd-theme", marker = "extra == 'dev'", specifier = ">=2.0.0" },
     { name = "sphinxcontrib-napoleon", marker = "extra == 'dev'", specifier = ">=0.7" },
@@ -1078,6 +1098,3 @@ requires-dist = [
     { name = "tiktoken", specifier = ">=0.7.0" },
     { name = "toml", marker = "extra == 'dev'", specifier = ">=0.10.2" },
 ]
-
-[package.metadata.requires-dev]
-dev = [{ name = "toml", specifier = ">=0.10.2" }]

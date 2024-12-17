@@ -10,6 +10,9 @@
 **/.DS_Store
 **/__pycache__
 
+# Logs
+logs
+
 # Sphinx
 docs/_build
 

@@ -30,6 +30,11 @@ class ToolUseMode(Enum):
     NEVER = "never"
 
 
+class ToolNotFoundError(KeyError):
+    def __init__(self, tool_name: str):
+        super().__init__(f"Tool {tool_name} not found.")
+
+
 @frozen
 class ToolParams:
     tools: list[CallableSchema] = field(factory=list)
@@ -38,7 +43,10 @@ class ToolParams:
 
     def get_tool(self, tool_name: str) -> CallableSchema:
         name_to_tool = {tool.name: tool for tool in self.tools}
-        return name_to_tool[tool_name]
+        try:
+            return name_to_tool[tool_name]
+        except KeyError as e:
+            raise ToolNotFoundError(tool_name) from e
 
 
 @frozen
@@ -50,7 +58,7 @@ class GenerationParams:
     presence_penalty: float | None = None
     stop_sequences: list[str] | None = None
     random_seed: int | None = None
-    force_json: bool = False
+    force_json: bool | None = None
 
 
 @frozen

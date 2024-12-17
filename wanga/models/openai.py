@@ -1,4 +1,5 @@
 import json
+import logging
 import re
 
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
@@ -29,6 +30,8 @@ _NUM_TOKENS_ERR_RE = re.compile(r"\((?P<messages>\d+) in the messages(, (?P<func
 
 
 __all__ = ["OpenAIModel"]
+
+_logger = logging.getLogger(__name__)
 
 
 class OpenAIModel(Model):
@@ -153,9 +156,13 @@ class OpenAIModel(Model):
         @self._create_retry_decorator()
         def _reply_with_retry():
             try:
+                _logger.debug(f"OpenAI request. Messages:\n{messages}\n, Tools:\n{tools.tools}")
                 response = self._client.chat.completions.create(**kwargs)
-                return _parse_response(response)
+                result = _parse_response(response)
+                _logger.debug(f"OpenAI Response: {result}")
+                return result
             except openai.OpenAIError as e:
+                _logger.error(f"OpenAI Error: {e}")
                 raise _wrap_error(e)
 
         return _reply_with_retry()
@@ -173,9 +180,13 @@ class OpenAIModel(Model):
         @self._create_retry_decorator()
         async def _reply_async_with_retry():
             try:
+                _logger.debug(f"OpenAI request.\nMessages:\n{messages}\nTools:\n{tools.tools}")
                 response = await self._async_client.chat.completions.create(**kwargs)
-                return _parse_response(response)
+                result = _parse_response(response)
+                _logger.debug(f"OpenAI Response: {result}")
+                return result
             except openai.OpenAIError as e:
+                _logger.error(f"OpenAI Error: {e}")
                 raise _wrap_error(e)
 
         return await _reply_async_with_retry()

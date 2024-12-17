@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Iterable
 from contextvars import ContextVar
 from typing import Any, NamedTuple, ParamSpec, TypeVar
@@ -7,10 +8,12 @@ from jinja2 import Template
 
 from .function import _RESPONSE_TOOL_NAME, AIFunction
 from .models import AssistantMessage, Message, Model, ToolMessage, parse_messages
-from .models.model import FinishReason, GenerationParams, ToolParams, ToolUseMode
+from .models.model import FinishReason, GenerationParams, ToolNotFoundError, ToolParams, ToolUseMode
 from .schema import SchemaValidationError
 
 __all__ = ["Runtime"]
+
+_logger = logging.getLogger(__name__)
 
 
 _P = ParamSpec("_P")
@@ -26,6 +29,10 @@ class ContentFilterError(ValueError, WangaRuntimeError):
 
 
 class OutputTooLongError(RuntimeError, WangaRuntimeError):
+    pass
+
+
+class ToolUseError(ValueError, WangaRuntimeError):
     pass
 
 
@@ -47,15 +54,24 @@ class FinalResponse:
 def invoke_tools(message: AssistantMessage, tool_params: ToolParams) -> ToolInvocationResults | FinalResponse:
     messages = []
     errors = []
+    if not message.tool_invocations:
+        error = ToolUseError(
+            "Incorrect tool invocation format. "
+            "Tool invocations should be represented as JSON objects conforming to the tool schema."
+        )
+        errors.append(error)
+        messages.append(ToolMessage(None, str(error)))
+        _logger.info(f"Received message without tool invocations: {message.content}")
     for invocation in message.tool_invocations:
-        tool = tool_params.get_tool(invocation.name)
         try:
+            tool = tool_params.get_tool(invocation.name)
             tool_output = tool.eval(invocation.arguments)
             if tool.name == _RESPONSE_TOOL_NAME:
                 return FinalResponse(tool_output)
-        except SchemaValidationError as e:
+        except (SchemaValidationError, ToolNotFoundError) as e:
             tool_output = str(e)
-            errors.append(e)
+            errors.append(ToolUseError(str(e)))
+            _logger.info(f"Tool invocation error: {tool_output}\nCause by the following invocation: {invocation}")
         messages.append(ToolMessage(invocation.invocation_id, str(tool_output)))
     return ToolInvocationResults(messages, errors)
 
@@ -78,20 +94,22 @@ def call_and_use_tools(
             if allow_plain_text_response:
                 return message.content
         if response.finish_reason in [FinishReason.STOP, FinishReason.TOOL_CALL]:
-            if message.tool_invocations:
-                tool_invocation_results = invoke_tools(message, tool_params)
-                if isinstance(tool_invocation_results, FinalResponse):
-                    return tool_invocation_results.value
-                tool_messages, errors = tool_invocation_results
-                messages.extend(tool_messages)
-                if errors:
-                    if retries_left == 0:
-                        raise errors[0]
-                    retries_left -= 1
-                else:
-                    retries_left = max_retries_on_invalid_output
+            tool_invocation_results = invoke_tools(message, tool_params)
+            if isinstance(tool_invocation_results, FinalResponse):
+                return tool_invocation_results.value
+            tool_messages, errors = tool_invocation_results
+            messages.extend(tool_messages)
+            if errors:
+                if retries_left == 0:
+                    message_log = "\n".join(str(m) for m in messages)
+                    _logger.error(
+                        f"Tool invocation failed after {max_retries_on_invalid_output} retries:\n{errors[0]}.\n"
+                        f"Message log: {message_log}"
+                    )
+                    raise errors[0]
+                retries_left -= 1
             else:
-                raise RuntimeError("Model returned a stop response without any tool invocations.")
+                retries_left = max_retries_on_invalid_output
         elif response.finish_reason == FinishReason.CONTENT_FILTER:
             raise ContentFilterError(f"Content filter triggered: {message.content}")
         elif FinishReason.LENGTH:

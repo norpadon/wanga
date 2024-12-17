@@ -5,15 +5,16 @@ from typing import List, Literal, Optional
 import pytest
 
 from wanga.function import ai_function
+from wanga.models.ollama import OllamaModel
 from wanga.models.openai import OpenAIModel
 from wanga.runtime import Runtime
 
-model = OpenAIModel("gpt-4o-mini")
+models = [OpenAIModel("gpt-4o-mini"), OllamaModel("llama3.2")]
 
 
-@pytest.fixture(scope="module")
-def runtime():
-    with Runtime(model) as rt:
+@pytest.fixture(scope="module", params=models)
+def runtime(request):
+    with Runtime(request.param) as rt:
         yield rt
 
 
@@ -25,7 +26,7 @@ def test_basic_ai_function(runtime):
         You are a friendly assistant.
 
         [|user|]
-        Greet {{ name }} in a friendly manner.
+        Greet {{ name }} in a friendly manner. Mention their name in your greeting.
         """
         raise NotImplementedError
 
