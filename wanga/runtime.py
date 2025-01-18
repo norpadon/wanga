@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from contextlib import ContextDecorator
 from contextvars import ContextVar
 from typing import Any, NamedTuple, ParamSpec, TypeVar
 
@@ -98,7 +99,7 @@ def call_and_use_tools(
             raise OutputTooLongError(message.content)
 
 
-class Runtime:
+class Runtime(ContextDecorator):
     def _get_model(self, model: str | Model) -> Model:
         if isinstance(model, Model):
             return model
