@@ -1,14 +1,15 @@
 from collections.abc import Iterable
-from contextlib import ContextDecorator
+from contextlib import AsyncContextDecorator, ContextDecorator
 from contextvars import ContextVar
-from typing import Any, NamedTuple, ParamSpec, TypeVar
+from dataclasses import dataclass, replace
+from typing import Any, AsyncContextManager, ContextManager, NamedTuple, ParamSpec, TypeVar
 
 from attr import frozen
 from jinja2 import Template
 
 from .function import _RESPONSE_TOOL_NAME, AIFunction
 from .models import AssistantMessage, Message, Model, ToolMessage, parse_messages
-from .models.model import FinishReason, GenerationParams, ToolParams, ToolUseMode
+from .models.model import FinishReason, GenerationParams, ResponseOption, ToolParams, ToolUseMode
 from .schema import SchemaValidationError
 
 __all__ = ["Runtime"]
@@ -61,6 +62,48 @@ def invoke_tools(message: AssistantMessage, tool_params: ToolParams) -> ToolInvo
     return ToolInvocationResults(messages, errors)
 
 
+@dataclass
+class InvocationState:
+    messages: list[Message]
+    tool_params: ToolParams
+    generation_params: GenerationParams
+    allow_plain_text_response: bool
+    max_retries_on_invalid_output: int
+    result: Any | None = None
+
+
+def _handle_model_response(response: ResponseOption, state: InvocationState) -> InvocationState:
+    message = response.message
+
+    new_messages = list(state.messages)
+    new_messages.append(message)
+    state = replace(state, messages=new_messages)
+
+    if response.finish_reason == FinishReason.STOP:
+        if state.allow_plain_text_response:
+            return replace(state, result=message.content)
+    if response.finish_reason in [FinishReason.STOP, FinishReason.TOOL_CALL]:
+        if message.tool_invocations:
+            tool_invocation_results = invoke_tools(message, state.tool_params)
+            if isinstance(tool_invocation_results, FinalResponse):
+                return replace(state, result=tool_invocation_results.value)
+            tool_messages, errors = tool_invocation_results
+            new_messages.extend(tool_messages)
+            state = replace(state, messages=new_messages)
+            if errors:
+                if state.max_retries_on_invalid_output == 0:
+                    raise errors[0]
+                state = replace(state, max_retries_on_invalid_output=state.max_retries_on_invalid_output - 1)
+        else:
+            raise RuntimeError("Model returned a stop response without any tool invocations.")
+    elif response.finish_reason == FinishReason.CONTENT_FILTER:
+        raise ContentFilterError(f"Content filter triggered: {message.content}")
+    elif FinishReason.LENGTH:
+        raise OutputTooLongError(message.content)
+
+    return state
+
+
 def call_and_use_tools(
     model: Model,
     messages: list[Message],
@@ -69,37 +112,45 @@ def call_and_use_tools(
     allow_plain_text_response: bool,
     max_retries_on_invalid_output: int,
 ) -> Any:
-    messages = list(messages)
-    retries_left = max_retries_on_invalid_output
+    state = InvocationState(
+        messages,
+        tool_params,
+        generation_params,
+        allow_plain_text_response,
+        max_retries_on_invalid_output,
+    )
     while True:
-        response = model.reply(messages, tool_params, generation_params).response_options[0]
-        message = response.message
-        messages.append(message)
-        if response.finish_reason == FinishReason.STOP:
-            if allow_plain_text_response:
-                return message.content
-        if response.finish_reason in [FinishReason.STOP, FinishReason.TOOL_CALL]:
-            if message.tool_invocations:
-                tool_invocation_results = invoke_tools(message, tool_params)
-                if isinstance(tool_invocation_results, FinalResponse):
-                    return tool_invocation_results.value
-                tool_messages, errors = tool_invocation_results
-                messages.extend(tool_messages)
-                if errors:
-                    if retries_left == 0:
-                        raise errors[0]
-                    retries_left -= 1
-                else:
-                    retries_left = max_retries_on_invalid_output
-            else:
-                raise RuntimeError("Model returned a stop response without any tool invocations.")
-        elif response.finish_reason == FinishReason.CONTENT_FILTER:
-            raise ContentFilterError(f"Content filter triggered: {message.content}")
-        elif FinishReason.LENGTH:
-            raise OutputTooLongError(message.content)
+        response = model.reply(state.messages, state.tool_params, state.generation_params).response_options[0]
+        state = _handle_model_response(response, state)
+        if state.result is not None:
+            return state.result
 
 
-class Runtime(ContextDecorator):
+async def call_and_use_tools_async(
+    model: Model,
+    messages: list[Message],
+    tool_params: ToolParams,
+    generation_params: GenerationParams,
+    allow_plain_text_response: bool,
+    max_retries_on_invalid_output: int,
+) -> Any:
+    state = InvocationState(
+        messages,
+        tool_params,
+        generation_params,
+        allow_plain_text_response,
+        max_retries_on_invalid_output,
+    )
+    while True:
+        response = (
+            await model.reply_async(state.messages, state.tool_params, state.generation_params)
+        ).response_options[0]
+        state = _handle_model_response(response, state)
+        if state.result is not None:
+            return state.result
+
+
+class Runtime(ContextDecorator, AsyncContextDecorator, ContextManager, AsyncContextManager):
     def _get_model(self, model: str | Model) -> Model:
         if isinstance(model, Model):
             return model
@@ -110,6 +161,13 @@ class Runtime(ContextDecorator):
         if not isinstance(model, Iterable):
             model = [model]
         self.models = [self._get_model(m) for m in model]
+
+    async def __aenter__(self):
+        self._token = _global_runtime.set(self)
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        _global_runtime.reset(self._token)
 
     def __enter__(self):
         self._token = _global_runtime.set(self)
@@ -126,10 +184,10 @@ class Runtime(ContextDecorator):
                 return model
         return self.models[0]
 
-    def execute(self, ai_function: AIFunction[_P, _R], *args: _P.args, **kwargs: _P.kwargs) -> _R:
+    def _prepare_kwargs(self, ai_function: AIFunction[_P, _R], *args: _P.args, **kwargs: _P.kwargs) -> dict[str, Any]:
         bound_arguments = ai_function.signature.bind(*args, **kwargs)
         bound_arguments.apply_defaults()
-        prompt = render_prompt(ai_function.prompt_template, bound_arguments.arguments)
+        messages = render_prompt(ai_function.prompt_template, bound_arguments.arguments)
         generation_params = ai_function.generation_params
         model = self._select_model(ai_function.preferred_models)
 
@@ -141,14 +199,22 @@ class Runtime(ContextDecorator):
             tool_mode = ToolUseMode.AUTO
         tool_params = ToolParams(tools, tool_mode)
 
-        return call_and_use_tools(
-            model,
-            prompt,
-            tool_params,
-            generation_params,
-            ai_function.return_schema is None,
-            ai_function.max_retries_on_invalid_output,
+        return dict(
+            model=model,
+            messages=messages,
+            tool_params=tool_params,
+            generation_params=generation_params,
+            allow_plain_text_response=ai_function.return_schema is None,
+            max_retries_on_invalid_output=ai_function.max_retries_on_invalid_output,
         )
+
+    def execute(self, ai_function: AIFunction[_P, _R], *args: _P.args, **kwargs: _P.kwargs) -> _R:
+        call_kwargs = self._prepare_kwargs(ai_function, *args, **kwargs)
+        return call_and_use_tools(**call_kwargs)
+
+    async def execute_async(self, ai_function: AIFunction[_P, _R], *args: _P.args, **kwargs: _P.kwargs) -> _R:
+        call_kwargs = self._prepare_kwargs(ai_function, *args, **kwargs)
+        return await call_and_use_tools_async(**call_kwargs)
 
 
 def get_runtime() -> Runtime:

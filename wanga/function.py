@@ -2,7 +2,7 @@ import inspect
 import logging
 from collections.abc import Iterable
 from functools import wraps
-from typing import Callable, Generic, ParamSpec, TypeVar
+from typing import Awaitable, Callable, Generic, ParamSpec, TypeVar
 
 from attrs import field, frozen
 from jinja2 import Template
@@ -21,6 +21,8 @@ __all__ = ["ai_function"]
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
 
+MaybeAsyncCallable = Callable[_P, Awaitable[_R]] | Callable[_P, _R]
+
 
 _RESPONSE_TOOL_NAME = "submit_response"
 _RESPONSE_FIELD_NAME = "response"
@@ -29,6 +31,7 @@ _RESPONSE_TOOL_PROMPT = "Call this function to respond to the user."
 
 @frozen
 class AIFunction(Generic[_P, _R]):
+    is_async: bool
     signature: inspect.Signature
     prompt_template: Template
     return_schema: CallableSchema | None
@@ -71,7 +74,9 @@ def _extract_ai_function(
     return_schema = _extract_return_schema(callable, schema_extractor)
     prompt_template = _extract_promt_template(callable)
     tools_schemas = [schema_extractor.extract_schema(tool) for tool in tools]
+    is_async = inspect.iscoroutinefunction(callable)
     return AIFunction(
+        is_async=is_async,
         signature=inspect.signature(callable),
         prompt_template=prompt_template,
         return_schema=return_schema,
@@ -88,6 +93,19 @@ def _make_wrapper(ai_function: AIFunction[_P, _R], wrap_as: Callable[_P, _R]) ->
         from .runtime import get_runtime
 
         return get_runtime().execute(ai_function, *args, **kwargs)
+
+    function_object_wrapper.__ai_function = ai_function  # type: ignore
+    return function_object_wrapper
+
+
+def _make_async_wrapper(
+    ai_function: AIFunction[_P, _R], wrap_as: Callable[_P, Awaitable[_R]]
+) -> Callable[_P, Awaitable[_R]]:
+    @wraps(wrap_as)
+    async def function_object_wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _R:
+        from .runtime import get_runtime
+
+        return await get_runtime().execute_async(ai_function, *args, **kwargs)
 
     function_object_wrapper.__ai_function = ai_function  # type: ignore
     return function_object_wrapper
@@ -120,14 +138,14 @@ def ai_function(
     generation_params: GenerationParams = GenerationParams(),
     schema_extractor: SchemaExtractor | None = None,
     max_retries_on_invalid_output: int = 3,
-) -> Callable[[Callable[_P, _R]], Callable[_P, _R]]:
+) -> Callable[[MaybeAsyncCallable], MaybeAsyncCallable]:
     tools = tools or []
     preferred_models = preferred_models or []
     if isinstance(preferred_models, str):
         preferred_models = [preferred_models]
     schema_extractor = schema_extractor or DEFAULT_SCHEMA_EXTRACTOR
 
-    def decorator(callable: Callable[_P, _R]) -> Callable[_P, _R]:
+    def decorator(callable: MaybeAsyncCallable) -> MaybeAsyncCallable:
         ai_function = _extract_ai_function(
             callable,
             list(tools),
@@ -136,6 +154,9 @@ def ai_function(
             schema_extractor,
             max_retries_on_invalid_output,
         )
-        return _make_wrapper(ai_function, callable)
+        if ai_function.is_async:
+            return _make_async_wrapper(ai_function, callable)
+        else:
+            return _make_wrapper(ai_function, callable)
 
     return decorator

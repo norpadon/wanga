@@ -38,6 +38,16 @@ class MockModel(Model):
         self.call_count += 1
         return response
 
+    async def reply_async(
+        self,
+        messages: list[Message],
+        tools: ToolParams = ToolParams(),
+        params: GenerationParams = GenerationParams(),
+        num_options: int = 1,
+        user_id: str | None = None,
+    ) -> ModelResponse:
+        return self.reply(messages, tools, params, num_options, user_id)
+
     @property
     def name(self) -> str:
         return self._name
@@ -235,3 +245,141 @@ def test_ai_function_preferred_models():
     assert result == 42
     assert mock_model_1.call_count == 1
     assert mock_model_2.call_count == 0
+
+
+@pytest.mark.asyncio
+async def test_basic_ai_function_execution_async():
+    mock_response = ModelResponse(
+        response_options=[
+            ResponseOption(
+                message=AssistantMessage(
+                    content=None,
+                    tool_invocations=[
+                        ToolInvocation(invocation_id="1", name="submit_response", arguments={"response": 3})
+                    ],
+                ),
+                finish_reason=FinishReason.TOOL_CALL,
+            )
+        ],
+        usage=UsageStats(prompt_tokens=10, response_tokens=5),
+    )
+    mock_model = MockModel([mock_response])
+
+    async with Runtime(mock_model):
+
+        @ai_function()
+        async def add_numbers(a: int, b: int) -> int:
+            """
+            [|system|]
+            You are a helpful math assistant.
+
+            [|user|]
+            Add {{ a }} and {{ b }}.
+
+            [|assistant|]
+            The sum of {{ a }} and {{ b }} is {{ a + b }}.
+            """
+            raise NotImplementedError
+
+        result = await add_numbers(1, 2)
+
+    assert result == 3
+    assert mock_model.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_ai_function_with_tools_async():
+    mock_responses = [
+        ModelResponse(
+            response_options=[
+                ResponseOption(
+                    message=AssistantMessage(
+                        content=None,
+                        tool_invocations=[
+                            ToolInvocation(invocation_id="1", name="multiply", arguments={"x": 3, "y": 2})
+                        ],
+                    ),
+                    finish_reason=FinishReason.TOOL_CALL,
+                )
+            ],
+            usage=UsageStats(prompt_tokens=15, response_tokens=10),
+        ),
+        ModelResponse(
+            response_options=[
+                ResponseOption(
+                    message=AssistantMessage(
+                        content=None,
+                        tool_invocations=[
+                            ToolInvocation(invocation_id="2", name="submit_response", arguments={"response": 6})
+                        ],
+                    ),
+                    finish_reason=FinishReason.TOOL_CALL,
+                )
+            ],
+            usage=UsageStats(prompt_tokens=20, response_tokens=5),
+        ),
+    ]
+    mock_model = MockModel(mock_responses)
+
+    def multiply(x: int, y: int) -> int:
+        return x * y
+
+    async with Runtime(mock_model):
+
+        @ai_function(tools=[multiply])
+        async def complex_math(a: int, b: int) -> int:
+            """
+            [|system|]
+            You are a math assistant capable of addition and multiplication.
+
+            [|user|]
+            Add {{ a }} and {{ b }}, then multiply the result by 2.
+            """
+            raise NotImplementedError
+
+        result = await complex_math(1, 2)
+
+    assert result == 6
+    assert mock_model.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_ai_function_error_handling_async():
+    mock_responses = [
+        ModelResponse(
+            response_options=[
+                ResponseOption(
+                    message=AssistantMessage(
+                        content=None,
+                        tool_invocations=[
+                            ToolInvocation(
+                                invocation_id="1", name="submit_response", arguments={"response": "Invalid"}
+                            )
+                        ],
+                    ),
+                    finish_reason=FinishReason.TOOL_CALL,
+                )
+            ],
+            usage=UsageStats(prompt_tokens=10, response_tokens=5),
+        )
+    ] * 4  # Provide 4 invalid responses
+
+    mock_model = MockModel(mock_responses)
+
+    async with Runtime(mock_model):
+
+        @ai_function(max_retries_on_invalid_output=3)
+        async def error_prone_function() -> int:
+            """
+            [|system|]
+            You are a helpful assistant.
+
+            [|user|]
+            Return the number 42.
+            """
+            raise NotImplementedError
+
+        with pytest.raises(SchemaValidationError):
+            await error_prone_function()
+
+    assert mock_model.call_count == 4  # Initial call + 3 retries

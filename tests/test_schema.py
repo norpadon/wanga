@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 from wanga.schema.extractor import DEFAULT_SCHEMA_EXTRACTOR
 from wanga.schema.jsonschema import JsonSchemaFlavor
-from wanga.schema.normalize import normalise_aliases, normalize_annotation, unpack_optional
+from wanga.schema.normalize import normalise_aliases, normalize_annotation, unpack_optional  # noqa: F401
 from wanga.schema.schema import (
     CallableSchema,
     LiteralNode,
