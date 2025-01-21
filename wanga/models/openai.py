@@ -248,6 +248,7 @@ def _format_image_content(image: ImageContent) -> dict:
         "type": "image_url",
         "image_url": {
             "url": url,
+            "detail": str(image.detail),
         },
     }
 

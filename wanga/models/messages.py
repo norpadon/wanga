@@ -2,6 +2,7 @@ import json
 import logging
 import re
 from collections.abc import Iterable
+from enum import Enum, auto
 from typing import NamedTuple
 
 from attrs import field, frozen
@@ -36,12 +37,26 @@ def _format_header(_tags: TagPair, _name: str, /, **kwargs: str) -> str:
     return f"{_tags.open}{_name}{param_str}{_tags.close}"
 
 
+class ImageDetail(Enum):
+    LOW = auto()
+    HIGH = auto()
+    AUTO = auto()
+
+    def __str__(self) -> str:
+        return self.name.lower()
+
+    @classmethod
+    def from_str(cls, detail_str: str) -> "ImageDetail":
+        return cls[detail_str.upper()]
+
+
 @frozen
 class ImageContent:
     r"""Image embedded in a message. Can either be a URL, or a base64-encoded file."""
 
     url: str | None = None
     base64: str | None = None
+    detail: ImageDetail = ImageDetail.AUTO
 
     def __attrs_post_init__(self):
         if self.url is None and self.base64 is None:
@@ -55,6 +70,8 @@ class ImageContent:
             kwargs["url"] = self.url
         if self.base64:
             kwargs["base64"] = self.base64
+        if self.detail is not ImageDetail.AUTO:
+            kwargs["detail"] = str(self.detail)
         return _format_header(_CONTENT_BLOCK_TAGS, "image", **kwargs)
 
 
@@ -196,8 +213,12 @@ _CONTENT_HEADER_REGEXES = _make_header_regex(_CONTENT_BLOCK_TAGS, _HEADER_BODY_R
 
 def _parse_image_content(header: ParsedHeader) -> ImageContent:
     assert header.name == "image"
+    updated_header: dict = {param_key: param_value for param_key, param_value in header.params.items()}
+    if "detail" in updated_header:
+        updated_header["detail"] = ImageDetail.from_str(updated_header["detail"])
+
     try:
-        return ImageContent(**header.params)
+        return ImageContent(**updated_header)
     except ValueError as e:
         raise MessageSyntaxError(f"Invalid image parameters: {header.params}") from e
 

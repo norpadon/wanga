@@ -188,7 +188,7 @@ def test_no_retry_when_disabled(model):
 def test_vision(vision_model):
     messages = parse_messages(
         "How many kittens are in this image?"
-        '<|image url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWHPE0dCs93yAjfxnT2IOR-lbNhvur5FlmkQ&s"|>'
+        '<|image url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWHPE0dCs93yAjfxnT2IOR-lbNhvur5FlmkQ&s" detail="high"|>'
     )
     response = vision_model.reply(messages)
     assert "four" in response.response_options[0].message.content.lower()  # type: ignore
